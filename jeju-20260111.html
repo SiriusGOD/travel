@@ -228,15 +228,45 @@
                     {
                         name: "生活必備物品",
                         items: ["牙刷牙膏組 (韓國飯店常不提供)", "舒適好走的鞋", "保養品與化妝品", "個人藥品", "防風外套 / 雨具"]
-                    },
-                    {
-                        name: "必備 App 檢查",
-                        items: ["Naver Map (地圖導航)", "Kakao Taxi (叫車服務)", "Papago (翻譯神器)", "Catch Table (排隊預約)"]
                     }
                 ]
             },
             {
                 id: 1,
+                title: "Rental · 樂天租車指南",
+                date: "2026 / 01 / 11",
+                theme: "取車流程與接駁車時間",
+                bgType: "city",
+                isRentalPage: true,
+                websiteUrl: "https://www.lotterentacar.net/hp/chn/carLife/jejuAuto.do",
+                sections: [
+                    {
+                        name: "樂天接駁車 (Shuttle Bus)",
+                        items: [
+                            "營運時間：06:00 - 23:00",
+                            "班次頻率：每 8 ~ 15 分鐘一班",
+                            "車程時間：約 10 - 15 分鐘",
+                            "機場搭乘點：1 號月台 1-1 位置",
+                            "租車點搭乘點：Auto House 正門口"
+                        ]
+                    },
+                    {
+                        name: "取車流程：濟州機場",
+                        items: ["走出機場 5 號出口", "穿越斑馬線前往對面接駁車站", "尋找 1 號月台的 1-1 位置", "搭乘樂天租車接駁車"]
+                    },
+                    {
+                        name: "必備文件",
+                        items: ["護照正本", "國際駕照 (IDP)", "台灣駕照正本", "主駕駛人信用卡"]
+                    }
+                ],
+                location: {
+                    name: "Lotte Rent-a-Car Jeju Auto House",
+                    search: "롯데렌터카 제주오토하우스",
+                    desc: "回程還車後，請在 Auto House 大門外等候接駁車返回機場。"
+                }
+            },
+            {
+                id: 2,
                 title: "Jeju North · 浪漫起點",
                 date: "2026 / 01 / 11",
                 theme: "北部海岸與甜點",
@@ -250,7 +280,7 @@
                 ]
             },
             {
-                id: 2,
+                id: 3,
                 title: "Center Peak · 森林與速度",
                 date: "2026 / 01 / 12",
                 theme: "中部高地冒險",
@@ -263,7 +293,7 @@
                 ]
             },
             {
-                id: 3,
+                id: 4,
                 title: "South Coast · 自然的幾何",
                 date: "2026 / 01 / 13",
                 theme: "西歸浦奇景",
@@ -277,7 +307,7 @@
                 ]
             },
             {
-                id: 4,
+                id: 5,
                 title: "Deep Ocean · 海底探險",
                 date: "2026 / 01 / 14",
                 theme: "深海與史努比",
@@ -290,7 +320,7 @@
                 ]
             },
             {
-                id: 5,
+                id: 6,
                 title: "Eastern Light · 海角晨曦",
                 date: "2026 / 01 / 15",
                 theme: "東部壯麗景致",
@@ -303,7 +333,7 @@
                 ]
             },
             {
-                id: 6,
+                id: 7,
                 title: "Udo Day · 離島漫漫",
                 date: "2026 / 01 / 16",
                 theme: "牛島慢時光",
@@ -316,7 +346,7 @@
                 ]
             },
             {
-                id: 7,
+                id: 8,
                 title: "City Final · 精品採購",
                 date: "2026 / 01 / 17",
                 theme: "市區潮流與購物",
@@ -325,24 +355,25 @@
                     { name: "新羅/樂天免稅店", type: "購物", search: "신라면세점 제주점", desc: "精品大採購，尋找夢想中的香奈兒。👜", icon: "shopping-bag" },
                     { name: "熟成到燒肉", type: "美食", search: "숙성도", desc: "預約制最強豬肉，為蜜月畫下完美句點。🐷", icon: "utensils" },
                     { name: "七星街", type: "購物", search: "칠성로쇼핑거리", desc: "潮流服飾與球鞋一條街。👟", icon: "shopping-bag" },
-                    { name: "東門市場", type: "市區", search: "동문재래시장", desc: "8號出口夜市與伴手禮採買。🏮", icon: "shopping-bag" }
+                    { name: "東門市場", type: "市區", search: "동문재래市場", desc: "8號出口夜市與伴手禮採買。🏮", icon: "shopping-bag" }
                 ]
             },
             {
-                id: 8,
+                id: 9,
                 title: "Good Bye Jeju · 下次見",
                 date: "2026 / 01 / 18",
                 theme: "歸途旅程",
                 bgType: "city",
                 stops: [
-                    { name: "還車與加油", type: "注意", search: "제주공항 렌터카", desc: "06:00 前還車，檢查油量與車況。⛽", icon: "car" },
+                    { name: "樂天 Auto House 還車", type: "注意", search: "롯데렌터카 제주오토하우스", desc: "06:00 準時還車，檢查油量並領取接駁號碼。⛽", icon: "car" },
+                    { name: "搭乘接駁車往機場", type: "交通", search: "제주국제공항", desc: "還車後在大廳外搭乘 Shuttle Bus (首班 06:00)。🚌", icon: "ship" },
                     { name: "機場免稅店", type: "購物", search: "제주국제공항", desc: "最後補齊漏掉的小物。🎁", icon: "shopping-bag" },
                     { name: "搭機返台", type: "登機", search: "제주국제공항", desc: "帶著滿滿的回憶，準備回家。✈️", icon: "sun" }
                 ]
             }
         ];
 
-        let currentDay = 0; // Start with Preparation
+        let currentDay = 0;
 
         const bgIllustrations = {
             north: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 500 Q 200 480 400 500 T 700 480" /><path d="M120 450 L 180 450" stroke-width="8" stroke-opacity="0.3" /><path d="M200 450 L 260 450" stroke-width="8" stroke-opacity="0.3" style="color:#FEB2B2" /><rect x="550" y="350" width="40" height="100" /><path d="M540 350 L 600 350 L 570 300 Z" /><circle cx="570" cy="280" r="10" /></svg>`,
@@ -350,17 +381,22 @@
             tangerine: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="200" cy="200" r="30" /><circle cx="250" cy="280" r="25" /><circle cx="150" cy="300" r="28" /><path d="M200 170 Q 210 150 230 160" /><path d="M600 400 Q 550 450 600 500 T 650 550" /></svg>`,
             ocean: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#BEE3F8"><path d="M0 400 Q 200 350 400 400 T 800 350" /><path d="M400 0 L 400 350 M380 50 L 380 300 M420 80 L 420 320" stroke-dasharray="10 10" /><path d="M100 100 Q 150 120 200 100" /></svg>`,
             sunrise: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#FED7D7"><path d="M50 500 L 200 450 L 400 150 L 600 450 L 750 500 Z" /><circle cx="650" cy="150" r="50" stroke-dasharray="5 5" /><path d="M100 550 Q 400 520 700 550" /></svg>`,
-            udo: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M300 400 L 500 400 L 550 350 L 250 350 Z" /><path d="M400 350 L 400 200 L 500 300 Z" /><path d="M0 500 Q 200 550 400 500 T 800 550" /></svg>`,
-            city: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="100" y="300" width="80" height="250" /><rect x="200" y="200" width="100" height="350" /><rect x="120" y="320" width="20" height="30" /><rect x="220" y="230" width="30" height="40" /><path d="M500 550 Q 600 540 700 550" /></svg>`
+            city: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="100" y="300" width="80" height="250" /><rect x="200" y="200" width="100" height="350" /><rect x="120" y="320" width="20" height="30" /><rect x="220" y="230" width="30" height="40" /><path d="M500 550 Q 600 540 700 550" /></svg>`,
+            udo: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M300 400 L 500 400 L 550 350 L 250 350 Z" /><path d="M400 350 L 400 200 L 500 300 Z" /><path d="M0 500 Q 200 550 400 500 T 800 550" /></svg>`
         };
 
         function renderDaySelector() {
             const selector = document.getElementById('day-selector');
-            selector.innerHTML = itineraryData.map(day => `
-                <button onclick="changeDay(${day.id})" class="day-btn relative px-4 py-2 transition-all duration-500 rounded-full border border-[#4A443F]/10 text-[#4A443F]/60 hover:bg-[#E9E6E2] ${day.id === currentDay ? 'active' : ''}">
-                    <span class="text-xs font-medium tracking-widest uppercase">${day.id === 0 ? 'Prep' : 'D'+day.id}</span>
-                </button>
-            `).join('');
+            selector.innerHTML = itineraryData.map(day => {
+                let label = 'D' + (day.id - 1);
+                if(day.id === 0) label = 'Prep';
+                if(day.id === 1) label = 'Rent';
+                return `
+                    <button onclick="changeDay(${day.id})" class="day-btn relative px-4 py-2 transition-all duration-500 rounded-full border border-[#4A443F]/10 text-[#4A443F]/60 hover:bg-[#E9E6E2] ${day.id === currentDay ? 'active' : ''}">
+                        <span class="text-xs font-medium tracking-widest uppercase">${label}</span>
+                    </button>
+                `;
+            }).join('');
         }
 
         function changeDay(id) {
@@ -401,7 +437,43 @@
 
             const container = document.getElementById('itinerary-grid');
             
-            if (data.isChecklist) {
+            if (data.isChecklist || data.isRentalPage) {
+                let rentalLocationHTML = "";
+                if (data.isRentalPage) {
+                    rentalLocationHTML = `
+                        <div class="mt-12 group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E9E6E2] flex flex-col md:flex-row fade-in">
+                            <div class="md:w-1/2 aspect-video bg-[#F1F1F1]/50 relative overflow-hidden p-6 flex flex-col items-center justify-center">
+                                <div class="p-5 bg-white rounded-full shadow-sm text-[#A6A890]">
+                                    <i data-lucide="map-pin" class="w-12 h-12" style="stroke-width: 1.2"></i>
+                                </div>
+                                <div class="text-center mt-4">
+                                    <p class="text-[10px] tracking-[0.5em] text-[#4A443F]/30 uppercase mb-1">Return / Pickup</p>
+                                    <p class="font-serif italic text-[#C89F9C] text-lg">"${data.location.name}"</p>
+                                </div>
+                                <div class="masking-tape absolute top-2 right-4 rotate-1"></div>
+                            </div>
+                            <div class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
+                                <h3 class="text-2xl font-light mb-4 text-[#5D5751]">導航與租車工具</h3>
+                                <p class="text-[#8E8781] text-md leading-relaxed mb-6 font-light italic">「 ${data.location.desc} 」</p>
+                                
+                                <div class="flex flex-col gap-3">
+                                    <button onclick="openNaverMap('${data.location.search}')" class="w-full py-4 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-sm font-medium hover:bg-[#A6A890] hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
+                                        <i data-lucide="navigation" class="w-4 h-4 group-hover/btn:rotate-12 transition-transform"></i>
+                                        開啟 Naver Map 地圖指南
+                                        <i data-lucide="external-link" class="w-3 h-3 opacity-40"></i>
+                                    </button>
+
+                                    <button onclick="window.open('${data.websiteUrl}', '_blank')" class="w-full py-4 rounded-full bg-[#A6A890]/10 text-[#4A443F] text-sm font-medium hover:bg-[#C89F9C] hover:text-white transition-all flex items-center justify-center gap-2 group/web">
+                                        <i data-lucide="globe" class="w-4 h-4 group-hover/web:animate-spin"></i>
+                                        訪問樂天租車官網
+                                        <i data-lucide="external-link" class="w-3 h-3 opacity-40"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML = `
                     <div class="w-full max-w-2xl bg-white/90 backdrop-blur-sm rounded-[40px] p-10 shadow-sm border border-[#E9E6E2] fade-in">
                         <div class="flex flex-col gap-10">
@@ -423,6 +495,7 @@
                             `).join('')}
                         </div>
                     </div>
+                    ${rentalLocationHTML}
                 `;
             } else {
                 container.innerHTML = data.stops.map((stop, index) => {
@@ -479,9 +552,13 @@
                 }).join('');
             }
 
-            document.getElementById('page-label').innerText = currentDay === 0 ? 'PAGE.PREP' : `PAGE.0${currentDay}`;
+            let pageLabel = `PAGE.0${currentDay - 1}`;
+            if(currentDay === 0) pageLabel = 'PAGE.PREP';
+            if(currentDay === 1) pageLabel = 'PAGE.RENT';
+            document.getElementById('page-label').innerText = pageLabel;
+
             document.getElementById('prev-btn').disabled = currentDay === 0;
-            document.getElementById('next-btn').disabled = currentDay === 8;
+            document.getElementById('next-btn').disabled = currentDay === 9;
 
             lucide.createIcons();
         }
@@ -494,7 +571,7 @@
             }
         };
         document.getElementById('next-btn').onclick = () => {
-            if (currentDay < 8) {
+            if (currentDay < 9) {
                 currentDay++;
                 updateUI();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
