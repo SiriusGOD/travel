@@ -94,6 +94,21 @@
             color: white;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
+
+        /* 流程箭頭動畫 */
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-accent-sage);
+            opacity: 0.4;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
     </style>
 </head>
 <body>
@@ -130,7 +145,8 @@
             <!-- JS dynamic inject -->
         </section>
 
-        <div id="itinerary-grid" class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Itinerary List with Directions -->
+        <div id="itinerary-grid" class="flex flex-col gap-12 items-center">
             <!-- JS dynamic inject -->
         </div>
     </main>
@@ -174,7 +190,7 @@
                 theme: "北部海岸與甜點",
                 bgType: "north",
                 stops: [
-                    { name: "道頭洞彩虹海岸道路", type: "景點", search: "도두동 무지개 해안도로", desc: "彩虹色的防波石塊，適合牽手漫步拍照。🌈", icon: "waves" },
+                    { name: "道頭洞彩虹海岸道路", type: "景點", search: "도두동 무지개 해安도로", desc: "彩虹色的防波石塊，適合牽手漫步拍照。🌈", icon: "waves" },
                     { name: "梨湖小馬燈塔", type: "打卡", search: "이호테우 말등대", desc: "紅白小馬像在守護這趟旅程，絕美剪影必拍。🐎", icon: "camera" },
                     { name: "姊妹麵條", type: "美食", search: "자매국수", desc: "濃郁的黑豬肉湯麵，開啟道地的濟州味覺。🍜", icon: "utensils" },
                     { name: "春天咖啡廳", type: "咖啡", search: "봄날카페", desc: "涯月海邊最具代表性的角落，聽著浪聲喝咖啡。☕", icon: "coffee" },
@@ -274,7 +290,7 @@
             mountain: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 550 L 300 200 L 500 450 L 650 300 L 800 550" /><path d="M150 550 Q 160 500 150 450 M140 480 Q 160 470 180 480" /><path d="M600 550 Q 610 480 600 420 M580 460 Q 610 440 640 460" /></svg>`,
             tangerine: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="200" cy="200" r="30" /><circle cx="250" cy="280" r="25" /><circle cx="150" cy="300" r="28" /><path d="M200 170 Q 210 150 230 160" /><path d="M600 400 Q 550 450 600 500 T 650 550" /></svg>`,
             ocean: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#BEE3F8"><path d="M0 400 Q 200 350 400 400 T 800 350" /><path d="M400 0 L 400 350 M380 50 L 380 300 M420 80 L 420 320" stroke-dasharray="10 10" /><path d="M100 100 Q 150 120 200 100" /></svg>`,
-            sunrise: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#FED7D7"><path d="M50 500 L 200 450 L 400 150 L 600 450 L 750 500 Z" /><circle cx="650" cy="150" r="50" stroke-dasharray="5 5" /><path d="M100 550 Q 400 520 700 550" /></svg>`,
+            sunrise: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5" style="color:#FED7D7"><path d="M50 500 L 200 450 L 400 150 L 600 450 L 750 500 Z" /><circle cx="650" cy="150" r="50" strokeDasharray="5 5" /><path d="M100 550 Q 400 520 700 550" /></svg>`,
             udo: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M300 400 L 500 400 L 550 350 L 250 350 Z" /><path d="M400 350 L 400 200 L 500 300 Z" /><path d="M0 500 Q 200 550 400 500 T 800 550" /></svg>`,
             city: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="100" y="300" width="80" height="250" /><rect x="200" y="200" width="100" height="350" /><rect x="120" y="320" width="20" height="30" /><rect x="220" y="230" width="30" height="40" /><path d="M500 550 Q 600 540 700 550" /></svg>`
         };
@@ -318,41 +334,68 @@
                 <p class="text-[#A6A890] text-sm tracking-[0.3em] uppercase font-medium">— ${data.theme} —</p>
             `;
 
-            // Update Grid
+            // Update List with Direction Arrows
             const grid = document.getElementById('itinerary-grid');
-            grid.innerHTML = data.stops.map((stop, index) => `
-                <div class="group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E9E6E2] fade-in" style="animation-delay: ${index * 0.1}s">
-                    <div class="aspect-video bg-[#F1F1F1]/50 relative overflow-hidden p-6 flex items-center justify-center">
-                        <div class="absolute inset-4 border border-[#4A443F]/5 rounded-2xl pointer-events-none"></div>
-                        <div class="flex flex-col items-center gap-4 group-hover:scale-105 transition-transform duration-700">
-                            <div class="p-5 bg-white rounded-full shadow-sm text-[#A6A890]">
-                                <i data-lucide="${stop.icon}" class="w-12 h-12" style="stroke-width: 1.2"></i>
+            grid.innerHTML = data.stops.map((stop, index) => {
+                const stepNum = (index + 1).toString().padStart(2, '0');
+                const isLast = index === data.stops.length - 1;
+                
+                return `
+                    <div class="w-full max-w-4xl flex flex-col items-center gap-12">
+                        <!-- Stop Card -->
+                        <div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E9E6E2] flex flex-col md:flex-row fade-in" style="animation-delay: ${index * 0.1}s">
+                            <!-- Visual Side -->
+                            <div class="md:w-1/2 aspect-video bg-[#F1F1F1]/50 relative overflow-hidden p-6 flex items-center justify-center">
+                                <!-- Step Number Badge -->
+                                <div class="absolute top-6 left-6 z-20 flex flex-col items-center">
+                                    <span class="text-[10px] tracking-widest text-[#A6A890] font-bold">STEP</span>
+                                    <span class="text-2xl font-serif italic text-[#C89F9C]">${stepNum}</span>
+                                </div>
+                                
+                                <div class="absolute inset-4 border border-[#4A443F]/5 rounded-2xl pointer-events-none"></div>
+                                <div class="flex flex-col items-center gap-4 group-hover:scale-105 transition-transform duration-700">
+                                    <div class="p-5 bg-white rounded-full shadow-sm text-[#A6A890]">
+                                        <i data-lucide="${stop.icon}" class="w-12 h-12" style="stroke-width: 1.2"></i>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-[10px] tracking-[0.5em] text-[#4A443F]/30 uppercase mb-1">Sketch of Memories</p>
+                                        <p class="font-serif italic text-[#C89F9C] text-lg">"${stop.name}"</p>
+                                    </div>
+                                </div>
+                                <div class="masking-tape absolute top-2 right-4 rotate-1"></div>
                             </div>
-                            <div class="text-center">
-                                <p class="text-[10px] tracking-[0.5em] text-[#4A443F]/30 uppercase mb-1">Sketch of Memories</p>
-                                <p class="font-serif italic text-[#C89F9C] text-lg">"${stop.name}"</p>
+                            
+                            <!-- Content Side -->
+                            <div class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="h-[2px] w-6 bg-[#A6A890]"></div>
+                                    <span class="text-[10px] tracking-[0.2em] font-bold text-[#A6A890] uppercase">${stop.type}</span>
+                                </div>
+                                <h3 class="text-2xl font-light mb-4 text-[#5D5751]">${stop.name}</h3>
+                                <p class="text-[#8E8781] text-md leading-relaxed mb-8 font-light italic">「 ${stop.desc} 」</p>
+                                <button onclick="openNaverMap('${stop.search}')" class="w-full py-4 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-sm font-medium hover:bg-[#A6A890] hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
+                                    <i data-lucide="navigation" class="w-4 h-4 group-hover/btn:rotate-12 transition-transform"></i>
+                                    開啟 Naver Map 地圖指南
+                                    <i data-lucide="external-link" class="w-3 h-3 opacity-40"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="masking-tape absolute top-2 left-1/2 -translate-x-1/2 rotate-1"></div>
-                        <svg class="absolute -bottom-8 -right-8 w-24 h-24 text-[#C89F9C] opacity-20" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M50 10 C20 10, 5 40, 10 70 C15 95, 80 95, 90 60 C100 20, 60 5, 45 15" stroke-linecap="round"/>
-                        </svg>
+
+                        <!-- Direction Arrow (Visible if not last) -->
+                        ${!isLast ? `
+                            <div class="flow-arrow flex flex-col items-center gap-2">
+                                <span class="text-[10px] tracking-[0.3em] font-bold uppercase">Next Step</span>
+                                <i data-lucide="chevrons-down" class="w-6 h-6"></i>
+                            </div>
+                        ` : `
+                            <div class="flex flex-col items-center gap-4 opacity-30 mt-4">
+                                <div class="h-1 w-12 bg-[#A6A890] rounded-full"></div>
+                                <span class="text-[10px] tracking-[0.4em] font-bold uppercase">End of Day</span>
+                            </div>
+                        `}
                     </div>
-                    <div class="p-10 relative">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="h-[2px] w-6 bg-[#A6A890]"></div>
-                            <span class="text-[10px] tracking-[0.2em] font-bold text-[#A6A890] uppercase">${stop.type}</span>
-                        </div>
-                        <h3 class="text-2xl font-light mb-4 text-[#5D5751]">${stop.name}</h3>
-                        <p class="text-[#8E8781] text-md leading-relaxed mb-10 font-light italic">「 ${stop.desc} 」</p>
-                        <button onclick="openNaverMap('${stop.search}')" class="w-full py-4 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-sm font-medium hover:bg-[#A6A890] hover:text-white transition-all flex items-center justify-center gap-2 group/btn">
-                            <i data-lucide="navigation" class="w-4 h-4 group-hover/btn:rotate-12 transition-transform"></i>
-                            開啟 Naver Map 地圖指南
-                            <i data-lucide="external-link" class="w-3 h-3 opacity-40"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             // Update Pagination
             document.getElementById('page-label').innerText = `PAGE.0${currentDay}`;
