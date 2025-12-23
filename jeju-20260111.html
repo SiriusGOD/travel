@@ -199,9 +199,17 @@
                             "起飛前 2.5 小時務必抵達櫃檯辦理報到"
                         ]
                     },
+                    {
+                        name: "票券預約提醒",
+                        items: [
+                            "981 Park 賽車 (建議 Klook/KKday 預約)",
+                            "西歸浦潛水艇 (需官網或平台預訂場次)",
+                            "London Bagel Museum (當天 APP 抽號碼牌)",
+                            "熟成到燒肉 (Catch Table APP 預約)"
+                        ]
+                    },
                     { name: "核心證件與財物", items: ["護照 (有效期內)", "國際駕照 (IDP)", "台灣駕照", "韓元現金", "國外回饋信用卡"] },
-                    { name: "電子設備", items: ["韓國上網卡 / WiFi 機", "轉接頭 (Type C/F)", "行動電源", "充電組"] },
-                    { name: "實用資訊", items: ["旅遊保險證明", "飯店地址截圖", "1330 旅遊諮詢號碼", "住宿預約證明"] }
+                    { name: "電子設備", items: ["韓國上網卡 / WiFi 機", "轉接頭 (Type C/F)", "行動電源", "充電組"] }
                 ]
             },
             {
@@ -225,11 +233,11 @@
                 theme: "北部海岸與甜點",
                 bgType: "north",
                 stops: [
-                    { name: "道頭洞彩虹海岸道路", type: "景點", search: "도두동 무지개 해안도로", desc: "彩色石塊防波堤，非常適合拍照。🌈", icon: "waves" },
-                    { name: "梨湖小馬燈塔", type: "打卡", search: "이호테우 말등대", desc: "紅白對望的小馬燈塔，海邊剪影聖地。🐎", icon: "camera" },
-                    { name: "姊妹麵條", type: "美食", search: "자매국수", desc: "必嚐黑豬肉湯麵，排隊要有心理準備。🍜", icon: "utensils" },
-                    { name: "春天咖啡廳", type: "咖啡", search: "봄날카페", desc: "涯月海邊老字號，風景與氛圍絕佳。☕", icon: "coffee" },
-                    { name: "UMU 布丁", type: "甜點", search: "우무", desc: "網紅系手作布丁，包裝超級可愛。🍮", icon: "shopping-bag" }
+                    { name: "道頭洞彩虹海岸道路", type: "景點", ticket: "免費參觀", search: "도두동 무지개 해안도로", desc: "彩色石塊防波堤，非常適合拍照。🌈", icon: "waves" },
+                    { name: "梨湖小馬燈塔", type: "打卡", ticket: "免費參觀", search: "이호테우 말등대", desc: "紅白對望的小馬燈塔，海邊剪影聖地。🐎", icon: "camera" },
+                    { name: "姊妹麵條", type: "美食", ticket: "人均約 1萬₩", search: "자매국수", desc: "必嚐黑豬肉湯麵，排隊要有心理準備。🍜", icon: "utensils" },
+                    { name: "春天咖啡廳", type: "咖啡", ticket: "低消一杯飲品", search: "봄날카페", desc: "涯月海邊老字號，風景與氛圍絕佳。☕", icon: "coffee" },
+                    { name: "UMU 布丁", type: "甜點", ticket: "每個約 6800₩", search: "우무", desc: "網紅系手作布丁，包裝超級可愛。🍮", icon: "shopping-bag" }
                 ]
             },
             {
@@ -239,10 +247,10 @@
                 theme: "中部高地冒險",
                 bgType: "mountain",
                 stops: [
-                    { name: "漢拿山 1100 高地", type: "自然", search: "1100고지", desc: "1月極大機率看到夢幻雪景或霧淞。❄️", icon: "mountain" },
-                    { name: "Hello Kitty 主題館", type: "主題", search: "헬로키티아일랜드", desc: "重溫純真時光，滿滿粉紅氛圍。🎀", icon: "heart" },
-                    { name: "981 公園", type: "體驗", search: "981파크", desc: "重力賽車競技，建議提前預約場次。🏎️", icon: "car" },
-                    { name: "豚魚吉燒肉", type: "美食", search: "돈어길", desc: "高級感的黑豬肉專賣店，晚餐約 2000 台幣。🥩", icon: "utensils" }
+                    { name: "漢拿山 1100 高地", type: "自然", ticket: "免費參觀", search: "1100고지", desc: "1月極大機率看到夢幻雪景或霧淞。❄️", icon: "mountain" },
+                    { name: "Hello Kitty 主題館", type: "主題", ticket: "成人 1.5萬₩", search: "헬로키티아일랜드", desc: "重溫純真時光，滿滿粉紅氛圍。🎀", icon: "heart" },
+                    { name: "981 公園", type: "體驗", ticket: "單次約 1.8萬₩起", search: "981파크", desc: "重力賽車競技，建議提前預約組合套票。🏎️", icon: "car" },
+                    { name: "豚魚吉燒肉", type: "美食", ticket: "人均約 4萬₩起", search: "돈어길", desc: "高級感的黑豬肉專賣店，晚餐首選。🥩", icon: "utensils" }
                 ]
             },
             {
@@ -252,11 +260,11 @@
                 theme: "西歸浦地質景致",
                 bgType: "tangerine",
                 stops: [
-                    { name: "大浦柱狀節理帶", type: "自然", search: "대포주상절리대", desc: "門票 2000₩，大自然鬼斧神工的六角石柱。🗿", icon: "mountain" },
-                    { name: "Gamtta nam", type: "咖啡", search: "감따남", desc: "在橘子園野餐喝咖啡，拍照極美。🍊", icon: "coffee" },
-                    { name: "濟州水上世界", type: "水上", search: "제주워터월드", desc: "放鬆玩水，享受韓式汗蒸幕。🏊", icon: "waves" },
-                    { name: "三姓穴海鮮湯", type: "美食", search: "삼성혈해물탕", desc: "活生生的海鮮入鍋，極其鮮甜。🐙", icon: "utensils" },
-                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "逛逛在地雜貨、買橘子巧克力伴手禮。🏮", icon: "shopping-bag" }
+                    { name: "大浦柱狀節理帶", type: "自然", ticket: "成人 2000₩", search: "대포주상절리대", desc: "大自然鬼斧神工的六角石柱岩壁。🗿", icon: "mountain" },
+                    { name: "Gamtta nam", type: "咖啡", ticket: "低消一杯飲品", search: "감따남", desc: "在橘子園野餐喝咖啡，拍照極美。🍊", icon: "coffee" },
+                    { name: "濟州水上世界", type: "水上", ticket: "約 2.5萬₩", search: "제주워터월드", desc: "放鬆玩水，享受道地的韓式汗蒸幕。🏊", icon: "waves" },
+                    { name: "三姓穴海鮮湯", type: "美食", ticket: "人均約 3.5萬₩", search: "삼성혈해물탕", desc: "活生生的海鮮入鍋，湯頭極其鮮甜。🐙", icon: "utensils" },
+                    { name: "西歸浦偶來市場", type: "市場", ticket: "免費參觀", search: "서귀포매일올레시장", desc: "逛逛在地雜貨、吃特色小吃。🏮", icon: "shopping-bag" }
                 ]
             },
             {
@@ -266,10 +274,10 @@
                 theme: "西歸浦深海與史努比",
                 bgType: "ocean",
                 stops: [
-                    { name: "西歸浦潛水艇", type: "體驗", search: "서귀포잠수함", desc: "探索水下 40 公尺的珊瑚與魚群。⚓", icon: "waves" },
-                    { name: "正房瀑布", type: "景點", search: "정방폭포", desc: "門票 2000₩，亞洲唯一直接入海的瀑布。🌊", icon: "waves" },
-                    { name: "史努比公園", type: "打卡", search: "스누피가든", desc: "超級大園區，內有可愛植物園與史努比家族。🐾", icon: "heart" },
-                    { name: "最大星巴克", type: "咖啡", search: "스타벅스 제주중문점", desc: "獨特建築外型，中文區標誌景點。☕", icon: "coffee" }
+                    { name: "西歸浦潛水艇", type: "體驗", ticket: "成人約 5.5萬₩", search: "서귀포잠수함", desc: "探索水下 40 公尺的珊瑚與魚群。⚓", icon: "waves" },
+                    { name: "正房瀑布", type: "景點", ticket: "成人 2000₩", search: "정방폭포", desc: "亞洲唯一直接入海的壯麗瀑布。🌊", icon: "waves" },
+                    { name: "史努比公園", type: "打卡", ticket: "成人 1.8萬₩", search: "스누피가든", desc: "超級大園區，內有可愛植物園與史努比。🐾", icon: "heart" },
+                    { name: "最大星巴克", type: "咖啡", ticket: "飲品約 7000₩", search: "스타벅스 제주중문점", desc: "獨特建築外型，中文區標誌景點。☕", icon: "coffee" }
                 ]
             },
             {
@@ -279,10 +287,10 @@
                 theme: "東部壯麗自然",
                 bgType: "sunrise",
                 stops: [
-                    { name: "Aqua Planet", type: "水族館", search: "아쿠а플라넷 제주", desc: "成人約 700 元，海底隧道景觀無敵。🐳", icon: "waves" },
-                    { name: "涉地可支", type: "自然", search: "섭지코지", desc: "絕美海岸步道，韓劇熱門拍攝地。🌾", icon: "palmtree" },
-                    { name: "城山日出峰", type: "遺產", search: "성산일출봉", desc: "14:00 海女表演，登頂需門票。🌋", icon: "mountain" },
-                    { name: "Oreun 咖啡廳", type: "咖啡", search: "오른", desc: "清水模設計，靜靜看海的最佳空間。☕", icon: "coffee" }
+                    { name: "Aqua Planet", type: "水族館", ticket: "成人約 4萬₩", search: "아쿠아플라넷 제주", desc: "海底隧道景觀無敵，欣賞精采表演。🐳", icon: "waves" },
+                    { name: "涉地可支", type: "自然", ticket: "免費 (收停車費)", search: "섭지코지", desc: "絕美海岸步道，韓劇熱門拍攝地。🌾", icon: "palmtree" },
+                    { name: "城山日出峰", type: "遺產", ticket: "成人 5000₩", search: "성산일출봉", desc: "14:00 海女表演，攻頂視角開闊。🌋", icon: "mountain" },
+                    { name: "Oreun 咖啡廳", type: "咖啡", ticket: "低消一杯飲品", search: "오른", desc: "清水模設計，東部看海最美空間。☕", icon: "coffee" }
                 ]
             },
             {
@@ -292,10 +300,10 @@
                 theme: "牛島慢時光",
                 bgType: "udo",
                 stops: [
-                    { name: "牛島渡輪", type: "交通", search: "우도도항선선착장", desc: "船票 1萬₩，記得攜帶護照搭船。🚢", icon: "ship" },
-                    { name: "牛島王子的故事", type: "甜點", search: "우도왕자이야기", desc: "必嚐招牌花生冰淇淋，香濃微甜。🍦", icon: "utensils" },
-                    { name: "London Bagel", type: "名店", search: "런던베이글뮤지엄 제주", desc: "Catch Table 抽號，以免現場枯等。🥯", icon: "shopping-bag" },
-                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "傳說中巨龍盤據海岸的奇石。🐲", icon: "mountain" }
+                    { name: "牛島渡輪", type: "交通", ticket: "來回約 1萬₩", search: "우도도항선선착장", desc: "船票包含入島費，需攜帶護照搭船。🚢", icon: "ship" },
+                    { name: "牛島王子的故事", type: "甜點", ticket: "冰淇淋約 6000₩", search: "우도왕자이야기", desc: "必嚐招牌花生冰淇淋，香濃微甜。🍦", icon: "utensils" },
+                    { name: "London Bagel", type: "名店", ticket: "人均約 2萬₩", search: "런던베이글뮤지엄 제주", desc: "Catch Table 抽號，以免現場枯等。🥯", icon: "shopping-bag" },
+                    { name: "龍頭岩", type: "景點", ticket: "免費參觀", search: "용두암", desc: "傳說中巨龍盤據海岸的奇石。🐲", icon: "mountain" }
                 ]
             },
             {
@@ -305,10 +313,10 @@
                 theme: "精品免稅與夜市",
                 bgType: "city",
                 stops: [
-                    { name: "新羅/樂天免稅店", type: "購物", search: "신라면세점 제주점", desc: "精品採買，記得攜帶護照退稅。👜", icon: "shopping-bag" },
-                    { name: "熟成到燒肉", type: "美食", search: "숙성도", desc: "人氣最高黑豬肉店，為蜜月畫下完美句點。🐷", icon: "utensils" },
-                    { name: "七星街", type: "購物", search: "칠성로쇼핑거리", desc: "潮流運動品牌集散地。👟", icon: "shopping-bag" },
-                    { name: "東門市場", type: "市區", search: "동문재래시장", desc: "8號出口晚上有熱鬧夜市。🏮", icon: "shopping-bag" }
+                    { name: "新羅/樂天免稅店", type: "購物", ticket: "護照退稅", search: "신라면세점 제주점", desc: "精品採買，記得攜帶護照現場退稅。👜", icon: "shopping-bag" },
+                    { name: "熟成到燒肉", type: "美食", ticket: "人均約 4萬₩", search: "숙성도", desc: "最強黑豬肉，為蜜月畫下完美句點。🐷", icon: "utensils" },
+                    { name: "七星街", type: "購物", ticket: "潮流採買", search: "칠성로쇼핑거리", desc: "潮流運動品牌與在地小店集散地。👟", icon: "shopping-bag" },
+                    { name: "東門市場", type: "市區", ticket: "夜市吃喝", search: "동문재래市場", desc: "8號出口晚上有熱鬧美食夜市。🏮", icon: "shopping-bag" }
                 ]
             },
             {
@@ -318,9 +326,9 @@
                 theme: "還車與歸途",
                 bgType: "city",
                 stops: [
-                    { name: "樂天 Auto House", type: "還車", search: "롯데렌터카 제주오토하우스", desc: "06:00 準時還車，檢查油量與內部。⛽", icon: "car" },
-                    { name: "搭乘機場接駁車", type: "交通", search: "제주국제공항", desc: "還車後於大廳外搭乘 Shuttle Bus (建議搭乘 07:00 前班次)。🚌", icon: "ship" },
-                    { name: "搭機返台 (虎航)", type: "歸途", search: "제주국제공항", desc: "航班：10:50 濟州島起飛 ➔ 12:10 抵達桃園。蜜月圓滿，幸福回家！✈️", icon: "sun" }
+                    { name: "樂天 Auto House", type: "還車", ticket: "油資結算", search: "롯데렌터카 제주오토하우스", desc: "06:00 準時還車，檢查油量與內部。⛽", icon: "car" },
+                    { name: "搭乘機場接駁車", type: "交通", ticket: "免費接駁", search: "제주국제공항", desc: "還車後於大廳外搭乘 Shuttle Bus 回機場。🚌", icon: "ship" },
+                    { name: "搭機返台 (虎航)", type: "歸途", ticket: "幸福回家", search: "제주국제공항", desc: "航班：10:50 起飛 ➔ 12:10 抵達桃園。✈️", icon: "sun" }
                 ]
             }
         ];
@@ -382,7 +390,7 @@
                     </div>` : "";
                 container.innerHTML = `<div class="w-full max-w-2xl bg-white/90 backdrop-blur-sm rounded-[40px] p-10 shadow-sm border border-[#E9E6E2] fade-in"><div class="flex flex-col gap-10">${data.sections.map(section => `<div><div class="flex items-center gap-3 mb-6"><div class="h-[2px] w-6 bg-[#C89F9C]"></div><h3 class="text-xl font-medium tracking-wide text-[#5D5751]">${section.name}</h3></div><div class="flex flex-col gap-2">${section.items.map(item => `<div class="check-item group" onclick="toggleCheck(this.querySelector('.check-box'))"><div class="check-box transition-all group-hover:scale-110"></div><span class="text-md text-[#8E8781] font-light tracking-wide">${item}</span></div>`).join('')}</div></div>`).join('')}</div></div>${extraHTML}`;
             } else {
-                container.innerHTML = data.stops.map((stop, index) => `<div class="w-full max-w-4xl flex flex-col items-center gap-12"><div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E9E6E2] flex flex-col md:flex-row fade-in" style="animation-delay: ${index * 0.1}s"><div class="md:w-1/2 aspect-video bg-[#F1F1F1]/50 relative overflow-hidden p-6 flex items-center justify-center"><div class="absolute top-6 left-6 z-20 flex flex-col items-center"><span class="text-[10px] tracking-widest text-[#A6A890] font-bold">STEP</span><span class="text-2xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div><div class="absolute inset-4 border border-[#4A443F]/5 rounded-2xl pointer-events-none"></div><div class="flex flex-col items-center gap-4 group-hover:scale-105 transition-transform duration-700"><div class="p-5 bg-white rounded-full shadow-sm text-[#A6A890]"><i data-lucide="${stop.icon}" class="w-12 h-12" style="stroke-width: 1.2"></i></div><div class="text-center"><p class="text-[10px] tracking-[0.5em] text-[#4A443F]/30 uppercase mb-1">Sketch of Memories</p><p class="font-serif italic text-[#C89F9C] text-lg">"${stop.name}"</p></div></div><div class="masking-tape absolute top-2 right-4 rotate-1"></div></div><div class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center"><div class="flex items-center gap-3 mb-4"><div class="h-[2px] w-6 bg-[#A6A890]"></div><span class="text-[10px] tracking-[0.2em] font-bold text-[#A6A890] uppercase">${stop.type}</span></div><h3 class="text-2xl font-light mb-4 text-[#5D5751]">${stop.name}</h3><p class="text-[#8E8781] text-md leading-relaxed mb-8 font-light italic">「 ${stop.desc} 」</p><button onclick="openNaverMap('${stop.search}')" class="w-full py-4 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-sm font-medium hover:bg-[#A6A890] hover:text-white transition-all flex items-center justify-center gap-2 group/btn"><i data-lucide="navigation" class="w-4 h-4"></i>開啟 Naver Map 地圖指南</button></div></div>${index < data.stops.length - 1 ? `<div class="flow-arrow flex flex-col items-center gap-2"><span class="text-[10px] tracking-[0.3em] font-bold uppercase">Next Step</span><i data-lucide="chevrons-down" class="w-6 h-6"></i></div>` : `<div class="flex flex-col items-center gap-4 opacity-30 mt-4"><div class="h-1 w-12 bg-[#A6A890] rounded-full"></div><span class="text-[10px] tracking-[0.4em] font-bold uppercase">End of Day</span></div>`}</div>`).join('');
+                container.innerHTML = data.stops.map((stop, index) => `<div class="w-full max-w-4xl flex flex-col items-center gap-12"><div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#E9E6E2] flex flex-col md:flex-row fade-in" style="animation-delay: ${index * 0.1}s"><div class="md:w-1/2 aspect-video bg-[#F1F1F1]/50 relative overflow-hidden p-6 flex items-center justify-center"><div class="absolute top-6 left-6 z-20 flex flex-col items-center"><span class="text-[10px] tracking-widest text-[#A6A890] font-bold">STEP</span><span class="text-2xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div><div class="absolute inset-4 border border-[#4A443F]/5 rounded-2xl pointer-events-none"></div><div class="flex flex-col items-center gap-4 group-hover:scale-105 transition-transform duration-700"><div class="p-5 bg-white rounded-full shadow-sm text-[#A6A890]"><i data-lucide="${stop.icon}" class="w-12 h-12" style="stroke-width: 1.2"></i></div><div class="text-center"><p class="text-[10px] tracking-[0.5em] text-[#4A443F]/30 uppercase mb-1">Sketch of Memories</p><p class="font-serif italic text-[#C89F9C] text-lg">"${stop.name}"</p></div></div><div class="masking-tape absolute top-2 right-4 rotate-1"></div></div><div class="md:w-1/2 p-8 md:p-10 flex flex-col justify-center"><div class="flex items-center justify-between mb-4"><div class="flex items-center gap-3"><div class="h-[2px] w-6 bg-[#A6A890]"></div><span class="text-[10px] tracking-[0.2em] font-bold text-[#A6A890] uppercase">${stop.type}</span></div><div class="flex items-center gap-1 bg-[#F9F7F4] border border-[#E9E6E2] px-3 py-1 rounded-full"><i data-lucide="ticket" class="w-3 h-3 text-[#C89F9C]"></i><span class="text-[10px] font-bold text-[#C89F9C]">${stop.ticket}</span></div></div><h3 class="text-2xl font-light mb-4 text-[#5D5751]">${stop.name}</h3><p class="text-[#8E8781] text-md leading-relaxed mb-8 font-light italic">「 ${stop.desc} 」</p><button onclick="openNaverMap('${stop.search}')" class="w-full py-4 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-sm font-medium hover:bg-[#A6A890] hover:text-white transition-all flex items-center justify-center gap-2 group/btn"><i data-lucide="navigation" class="w-4 h-4"></i>開啟 Naver Map 地圖指南</button></div></div>${index < data.stops.length - 1 ? `<div class="flow-arrow flex flex-col items-center gap-2"><span class="text-[10px] tracking-[0.3em] font-bold uppercase">Next Step</span><i data-lucide="chevrons-down" class="w-6 h-6"></i></div>` : `<div class="flex flex-col items-center gap-4 opacity-30 mt-4"><div class="h-1 w-12 bg-[#A6A890] rounded-full"></div><span class="text-[10px] tracking-[0.4em] font-bold uppercase">End of Day</span></div>`}</div>`).join('');
             }
 
             // Note Section Rendering
