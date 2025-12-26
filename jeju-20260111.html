@@ -4,61 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>濟州島蜜月手寫手札</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com/"></script>
-    <!-- Google Fonts: Noto Serif TC -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;900&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase 配置
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'jeju-honeymoon';
+        // 全域狀態初始化，防止在 Firebase 載入前 updateUI 崩潰
+        window.checklistStates = window.checklistStates || {};
+        window.getCheckState = (itemId) => window.checklistStates[itemId] || false;
 
-        let user = null;
-        let checklistStates = {};
+        let firebaseConfig = {};
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch (e) { console.warn("Firebase config not found."); }
 
-        // 初始化預設狀態查詢，避免 UI 渲染時出錯
-        window.getCheckState = (itemId) => checklistStates[itemId] || false;
+        if (firebaseConfig.apiKey) {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'jeju-honeymoon';
 
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        };
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            };
 
-        onAuthStateChanged(auth, (currentUser) => {
-            user = currentUser;
-            if (user) {
-                const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'checklists', 'states');
-                onSnapshot(docRef, (snapshot) => {
-                    if (snapshot.exists()) {
-                        checklistStates = snapshot.data();
-                        window.refreshCheckboxes();
-                    }
-                });
-            }
-        });
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'checklists', 'states');
+                    onSnapshot(docRef, (snapshot) => {
+                        if (snapshot.exists()) {
+                            window.checklistStates = snapshot.data();
+                            if (window.refreshCheckboxes) window.refreshCheckboxes();
+                        }
+                    });
+                }
+            });
 
-        window.saveCheckState = async (itemId, isChecked) => {
-            if (!user) return;
-            checklistStates[itemId] = isChecked;
-            const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'checklists', 'states');
-            await setDoc(docRef, checklistStates, { merge: true });
-        };
+            window.saveCheckState = async (itemId, isChecked) => {
+                if (!auth.currentUser) return;
+                window.checklistStates[itemId] = isChecked;
+                const docRef = doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'checklists', 'states');
+                await setDoc(docRef, window.checklistStates, { merge: true });
+            };
 
-        initAuth();
+            initAuth();
+        }
     </script>
 
     <style>
@@ -68,77 +66,41 @@
             --color-accent-rose: #C89F9C;
             --color-bg: #F9F7F4;
         }
-
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: var(--color-bg);
             color: var(--color-primary);
             overflow-x: hidden;
         }
-
         .font-serif-tc { font-family: 'Noto Serif TC', serif; }
-
         .paper-texture {
-            position: fixed;
-            inset: 0;
-            opacity: 0.05;
-            pointer-events: none;
+            position: fixed; inset: 0; opacity: 0.05; pointer-events: none;
             background-image: url("https://www.transparenttextures.com/patterns/handmade-paper.png");
             z-index: 50;
         }
-
         #bg-illustration-container {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            opacity: 0.08;
-            transition: opacity 1s ease-in-out;
-            z-index: 5;
+            position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.08; transition: opacity 1s; z-index: 5;
         }
-
         .masking-tape {
-            height: 2rem;
-            width: 6rem;
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(4px);
-            border-left: 1px dashed rgba(0,0,0,0.05);
-            border-right: 1px dashed rgba(0,0,0,0.05);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transform: rotate(-2deg);
+            height: 2rem; width: 6rem; background-color: rgba(255, 255, 255, 0.4);
+            border-left: 1px dashed rgba(0,0,0,0.05); border-right: 1px dashed rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); transform: rotate(-2deg);
             clip-path: polygon(0% 0%, 100% 0%, 98% 50%, 100% 100%, 0% 100%, 2% 50%);
         }
-
         .handwritten-note {
-            background-color: #FFFDF9;
-            border: 1px solid #E9E6E2;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            font-family: 'Noto Serif TC', serif;
-            min-height: 100px;
-            width: 100%;
-            resize: none;
-            outline: none;
+            background-color: #FFFDF9; border: 1px solid #E9E6E2; padding: 1.5rem; border-radius: 1rem;
+            font-family: 'Noto Serif TC', serif; min-height: 100px; width: 100%; resize: none; outline: none;
         }
-
         .fade-in { animation: fadeIn 0.7s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .day-btn.active { background-color: var(--color-accent-sage); border-color: var(--color-accent-sage); color: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-
+        .day-btn.active { background-color: var(--color-accent-sage); border-color: var(--color-accent-sage); color: white; }
         .check-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px dashed rgba(0,0,0,0.05); cursor: pointer; }
         .check-box { width: 1.25rem; height: 1.25rem; border: 1.5px solid var(--color-accent-sage); border-radius: 4px; transition: all 0.3s; flex-shrink: 0; }
         .check-box.checked { background-color: var(--color-accent-sage); position: relative; }
         .check-box.checked::after { content: '✓'; color: white; font-size: 0.75rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
         .flow-arrow { display: flex; align-items: center; justify-content: center; color: var(--color-accent-sage); opacity: 0.4; animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
-
-        @media print {
-            .no-print { display: none !important; }
-            #itinerary-grid { display: block !important; }
-        }
+        @media print { .no-print { display: none !important; } #itinerary-grid { display: block !important; } }
     </style>
 </head>
 <body>
@@ -165,198 +127,152 @@
     </main>
 
     <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 no-print">
-        <div class="bg-white/80 backdrop-blur-md border border-[#E9E6E2] px-8 py-4 rounded-full shadow-lg flex items-center gap-8 text-center">
-            <button id="prev-btn" class="text-[#4A443F] hover:text-[#C89F9C] disabled:opacity-20 transition-colors"><i data-lucide="chevron-left" class="w-7 h-7"></i></button>
+        <div class="bg-white/80 backdrop-blur-md border border-[#E9E6E2] px-8 py-4 rounded-full shadow-lg flex items-center gap-12 text-center">
+            <button id="prev-btn" class="text-[#4A443F] hover:text-[#C89F9C] transition-colors"><i data-lucide="chevron-left" class="w-7 h-7"></i></button>
             <div class="flex flex-col items-center">
                 <i data-lucide="book-open" class="text-[#A6A890] w-5 h-5 mb-0.5"></i>
                 <span id="page-label" class="text-sm font-light tracking-[0.3em] text-[#5D5751]">PAGE.00</span>
             </div>
-            <button id="next-btn" class="text-[#4A443F] hover:text-[#C89F9C] disabled:opacity-20 transition-colors"><i data-lucide="chevron-right" class="w-7 h-7"></i></button>
+            <button id="next-btn" class="text-[#4A443F] hover:text-[#C89F9C] transition-colors"><i data-lucide="chevron-right" class="w-7 h-7"></i></button>
         </div>
     </div>
-
-    <footer class="max-w-4xl mx-auto pb-40 text-center px-6 relative z-10">
-        <div class="flex justify-center gap-4 mb-6">
-            <i data-lucide="leaf" class="text-[#A6A890] w-5 h-5"></i>
-            <i data-lucide="heart" class="text-[#C89F9C] w-5 h-5 animate-pulse"></i>
-            <i data-lucide="leaf" class="text-[#A6A890] w-5 h-5"></i>
-        </div>
-        <p class="text-[#8E8781] text-sm font-light tracking-[0.2em] italic mb-4">" May every path in Jeju lead to beautiful memories. "</p>
-    </footer>
 
     <script>
         const itineraryData = [
             {
-                id: 0,
-                title: "Preparation · 準備清單",
-                date: "Before Departure",
-                theme: "打包與航班核心資訊",
-                bgType: "city",
-                isChecklist: true,
+                id: 0, title: "Preparation · 準備清單", date: "Before Departure", theme: "打包與航班資訊", bgType: "city", isChecklist: true,
                 sections: [
                     { name: "航班資訊 (虎航)", items: ["去程 1/11：06:40 ➔ 09:50", "回程 1/18：10:50 ➔ 12:10"] },
-                    { name: "核心證件", items: ["護照 (有效期內)", "國際駕照 (IDP)", "台灣駕照 (取車核對)", "韓元現金", "國外回饋信用卡"] },
-                    { name: "電子與網路", items: ["韓國上網卡", "轉接頭 (Type C/F)", "行動電源", "充電線材"] },
-                    { name: "個人用品", items: ["牙刷牙膏組", "保養品/化妝品", "個人藥品", "防風外套/好走路的鞋"] }
+                    { name: "核心證件", items: ["護照", "國際駕照 (IDP)", "台灣駕照", "韓元現金", "國外刷卡信用卡"] },
+                    { name: "電子設備", items: ["韓國上網卡", "轉接頭 (Type C/F)", "行動電源", "充電組"] }
                 ]
             },
             {
-                id: 1,
-                title: "Rental · 樂天租車指南",
-                date: "2026 / 01 / 11",
-                theme: "取車流程與接駁車時間",
-                bgType: "city",
-                isRentalPage: true,
+                id: 1, title: "Rental · 樂天租車指南", date: "2026 / 01 / 11", theme: "取車流程與預約", bgType: "city", isRentalPage: true,
                 websiteUrl: "https://www.lotterentacar.net/hp/chn/carLife/jejuAuto.do",
                 sections: [
-                    { name: "接駁車資訊", items: ["營運時間: 06:00-23:00", "班次: 每 8~15 分鐘一班", "月台: 濟州機場 1 號月台 1-1", "車程: 約 15 分鐘"] },
-                    { name: "取車核對清單", items: ["錄影記錄車身外觀", "確認油箱全滿", "檢查備胎與備用工具", "核對保險合約條款"] }
+                    { name: "接駁車資訊", items: ["營運: 06:00-23:00", "月台: 機場 1-1", "車程: 15 分鐘"] },
+                    { name: "取車清單", items: ["錄影記錄外觀", "確認油箱全滿", "核對保險合約"] }
                 ],
-                location: { name: "Lotte Jeju Auto House", search: "롯데렌터카 제주오토하우스", desc: "回程還車地點與取車處一致。" }
+                location: { name: "Lotte Jeju Auto House", search: "롯데렌터카 제주오토하우스", desc: "落地後搭乘接駁車前往取車。" }
             },
             {
-                id: 2,
-                title: "Day 1 · 抵達與西部出發",
-                date: "2026 / 01 / 11",
-                theme: "海岸線美食與住宿",
-                bgType: "north",
+                id: 2, title: "Day 1 · 抵達與西部出發", date: "2026 / 01 / 11", theme: "西部海岸美食之旅", bgType: "north",
                 stops: [
-                    { name: "機場去樂天租車", type: "交通", search: "제주공항 롯데렌터카 셔틀", desc: "搭接駁車取車開啟旅程。🚌", icon: "car" },
-                    { name: "道頭洞彩虹海岸道路", type: "景點", search: "도두동 무지개 해안도로", desc: "彩色石塊拍照點。🌈", icon: "waves" },
-                    { name: "梨湖小馬燈塔", type: "打卡", search: "이호테우 말등대", desc: "經典對望小馬燈塔。🐎", icon: "camera" },
-                    { name: "姊妹麵條", type: "美食", search: "자매국수", desc: "必嚐黑豬肉湯麵。🍜", icon: "utensils" },
-                    { name: "Egyul 橘子蛋塔", type: "點心", search: "에규울 이호테우해변점", desc: "梨湖店特色蛋塔。🍮", icon: "shopping-bag" },
-                    { name: "斯坦福酒店 Check-in", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "先辦理入住放行李。🏨", icon: "heart" },
-                    { name: "Noraba 海鮮拉麵", type: "美食", search: "노라바", desc: "涯月海鮮拉麵名店。🦀", icon: "utensils" },
-                    { name: "涯月白帶魚 (애월갈치암행어사)", type: "美食", search: "애월갈치암행어사", desc: "品嚐在地鮮甜白帶魚。🐟", icon: "utensils" },
-                    { name: "漢潭散步路", type: "自然", search: "한담해변", desc: "海邊絕美散步道。🌾", icon: "palmtree" },
-                    { name: "春天咖啡廳 BOMNAL", type: "咖啡", search: "봄날카페", desc: "涯月最具代表性的咖啡廳。☕", icon: "coffee" },
-                    { name: "Mumu 濟州選物店", type: "購物", search: "무무제주", desc: "質感文具與小物。🎁", icon: "shopping-bag" },
-                    { name: "買 UMU 布丁", type: "甜點", search: "우무", desc: "文青布丁首選。🍮", icon: "shopping-bag" },
-                    { name: "回斯坦福酒店休息", type: "休息", search: "스탠포드호텔앤리조트 제주", desc: "結束豐富的第一天。🌙", icon: "heart" }
+                    { name: "樂天租車取車", type: "交通", ticket: "預約取車", search: "롯데렌터카 제주오토하우스", desc: "開啟蜜月自駕旅程。🚗", icon: "car" },
+                    { name: "道頭洞彩虹海岸道路", type: "景點", ticket: "免費", search: "도두동 무지개 해안도로", desc: "必拍彩色石塊。🌈", icon: "camera" },
+                    { name: "梨湖小馬燈塔", type: "打卡", ticket: "免費", search: "이호테우 말등대", desc: "紅白對望燈塔。🐎", icon: "camera" },
+                    { name: "姊妹麵條", type: "美食", ticket: "1萬₩", search: "자매국수", desc: "濃郁黑豬肉湯麵。🍜", icon: "utensils" },
+                    { name: "Egyul 橘子蛋塔", type: "點心", search: "에규울 이호테우해변점", desc: "梨湖海邊特色蛋塔。🍮", icon: "shopping-bag" },
+                    { name: "斯坦福度假酒店 Check in", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "先辦理入住放行李。🏨", icon: "heart" },
+                    { name: "Noraba 海鮮拉麵", type: "美食", search: "노라바", desc: "超人氣爆量拉麵。🦀", icon: "utensils" },
+                    { name: "涯月白帶魚 (애월갈치암행어사)", type: "美食", search: "애월갈치암행어사", desc: "店名：애월갈치암행어사。🐟", icon: "utensils" },
+                    { name: "漢潭散步路 (한담해변)", type: "自然", search: "한담해변", desc: "最美海岸步道。🌾", icon: "palmtree" },
+                    { name: "春天咖啡廳 BOMNAL", type: "咖啡", search: "봄날카페", desc: "涯月老字號。☕", icon: "coffee" },
+                    { name: "Mumu 濟州選物店", type: "購物", search: "무무제주", desc: "質感文具小物。🎁", icon: "shopping-bag" },
+                    { name: "買 UMU 布丁", type: "甜點", search: "우무", desc: "文青必買布丁。🍮", icon: "shopping-bag" },
+                    { name: "回斯坦福度假酒店", type: "休息", search: "스탠포드호텔앤리조트 제주", desc: "第一晚好眠。🌙", icon: "heart" }
                 ]
             },
             {
-                id: 3,
-                title: "Day 2 · 漢拿山與極速冒險",
-                date: "2026 / 01 / 12",
-                theme: "高地景色與 98.1 體驗",
-                bgType: "mountain",
+                id: 3, title: "Day 2 · 漢拿山與 98.1", date: "2026 / 01 / 12", theme: "高地景色與極速", bgType: "mountain",
                 stops: [
-                    { name: "斯坦福酒店 Check-out", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "啟程前往中部。🏨", icon: "heart" },
+                    { name: "斯坦福酒店 Check out", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "出發前往中部。🏨", icon: "heart" },
                     { name: "Eorimork 停車場拍照", type: "景點", search: "어리목주차장", desc: "漢拿山入山口冬景。❄️", icon: "camera" },
-                    { name: "漢拿山 1100 高地", type: "自然", search: "1100고지", desc: "看霧淞與雪景。🏔️", icon: "mountain" },
-                    { name: "濟州樂天酒店 Check-in", type: "住宿", search: "롯데호텔 제주", desc: "入住中文區奢華酒店。🏨", icon: "heart" },
-                    { name: "Hello Kitty 主題館", type: "主題", search: "헬로키티아일랜드", desc: "重溫純真時光。🎀", icon: "heart" },
-                    { name: "981 Park 賽車", type: "體驗", search: "981파크", desc: "重力賽車競速體驗。🏎️", icon: "car" },
-                    { name: "豚魚吉燒肉 (新華店)", type: "美食", search: "돈어길 제주신화월드본점", desc: "必吃精緻黑豬肉。🥩", icon: "utensils" },
-                    { name: "回濟州樂天酒店", type: "休息", search: "롯데호텔 제주", desc: "享受夜間美景。🌙", icon: "heart" }
+                    { name: "漢拿山 1100 高地", type: "自然", search: "1100고지", desc: "看霧淞雪景。🏔️", icon: "mountain" },
+                    { name: "濟州樂天酒店 Check in", type: "住宿", search: "롯데호텔 제주", desc: "中文區奢華住宿。🏨", icon: "heart" },
+                    { name: "Hello Kitty 主題館", type: "主題", search: "헬로키티아일랜드", desc: "少女心爆發。🎀", icon: "heart" },
+                    { name: "981 Park 賽車", type: "體驗", search: "981파크", desc: "重力賽車競速。🏎️", icon: "car" },
+                    { name: "豚魚吉燒肉 (新華店)", type: "美食", search: "돈어길 제주신화월드본점", desc: "黑豬肉首選。🥩", icon: "utensils" },
+                    { name: "回濟州樂天酒店", type: "休息", search: "롯데호텔 제주", desc: "享受飯店氛圍。🌙", icon: "heart" }
                 ]
             },
             {
-                id: 4,
-                title: "Day 3 · 西歸浦與水上世界",
-                date: "2026 / 01 / 13",
-                theme: "地質奇觀與汗蒸幕",
-                bgType: "tangerine",
+                id: 4, title: "Day 3 · 西歸浦放鬆", date: "2026 / 01 / 13", theme: "地質奇觀與汗蒸幕", bgType: "tangerine",
                 stops: [
-                    { name: "濟州樂天酒店 Check-out", type: "住宿", search: "롯데호텔 제주", desc: "前往西歸浦。🏨", icon: "heart" },
-                    { name: "大浦柱狀節理帶", type: "自然", ticket: "2000₩", search: "대포주상절리대", desc: "壯觀火山岩壁。🗿", icon: "mountain" },
-                    { name: "橘子咖啡廳 Gamtta nam", type: "咖啡", search: "감따남", desc: "橘子園下午茶。🍊", icon: "coffee" },
-                    { name: "濟州水上世界", type: "放鬆", ticket: "約 2.5萬₩", search: "제주워터월드", desc: "汗蒸幕桑拿體驗。🏊", icon: "waves" },
-                    { name: "三姓穴海鮮湯", type: "美食", search: "삼성혈해물탕", desc: "活生生澎湃海鮮。🐙", icon: "utensils" },
-                    { name: "西歸浦欣欣酒店 Check-in", type: "住宿", search: "신신호텔 서귀포", desc: "入住市中心。🏨", icon: "heart" },
-                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "逛街補貨伴手禮。🏮", icon: "shopping-bag" }
+                    { name: "濟州樂天酒店 Check out", type: "住宿", search: "롯데호텔 제주", desc: "往南移動。🏨", icon: "heart" },
+                    { name: "大浦柱狀節理帶", type: "自然", ticket: "2000₩", search: "대포주상절리대", desc: "火山岩奇觀。🗿", icon: "mountain" },
+                    { name: "咖啡廳 Gamtta nam", type: "咖啡", search: "감따남", desc: "橘子園野餐感。🍊", icon: "coffee" },
+                    { name: "濟州水上世界", type: "放鬆", search: "제주워터월드", desc: "韓式汗蒸幕。🏊", icon: "waves" },
+                    { name: "三姓穴海鮮湯", type: "美食", search: "삼성혈해물탕", desc: "活體澎湃海鮮。🐙", icon: "utensils" },
+                    { name: "欣欣酒店 Check in", type: "住宿", search: "신신호텔 서귀포", desc: "市中心便利。🏨", icon: "heart" },
+                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "買伴手禮。🏮", icon: "shopping-bag" }
                 ]
             },
             {
-                id: 5,
-                title: "Day 4 · 潛水艇與史努比",
-                date: "2026 / 01 / 14",
-                theme: "海底探險與療癒園區",
-                bgType: "ocean",
+                id: 5, title: "Day 4 · 潛水艇與史努比", date: "2026 / 01 / 14", theme: "海底探險與療癒園區", bgType: "ocean",
                 stops: [
-                    { name: "西歸浦欣欣酒店 Check-out", type: "住宿", search: "신신호텔 서귀포", desc: "往東移動。🏨", icon: "heart" },
-                    { name: "西歸浦潛水艇", type: "體驗", ticket: "5.5萬₩", search: "서귀포잠수함", desc: "探索水下 40 米。⚓", icon: "waves" },
+                    { name: "欣欣酒店 Check out", type: "住宿", search: "신신호텔 서귀포", desc: "前往東部。🏨", icon: "heart" },
+                    { name: "西歸浦潛水艇", type: "體驗", ticket: "5.5萬₩", search: "서귀포잠수함", desc: "海底 40 米。⚓", icon: "waves" },
                     { name: "正房瀑布", type: "景點", ticket: "2000₩", search: "정방폭포", desc: "直接入海瀑布。🌊", icon: "waves" },
-                    { name: "黑豬海鮮三合", type: "美食", search: "제주 흑돼지 해물삼합", desc: "豪華合菜體驗。🥘", icon: "utensils" },
-                    { name: "史努比公園", type: "打卡", search: "스누피가든", desc: "超大療癒系園區。🐾", icon: "heart" },
-                    { name: "星巴克 (松堂公園店)", type: "咖啡", search: "스타벅스 더제주송당파크R점", desc: "風景最美星巴克。☕", icon: "coffee" },
-                    { name: "Donghwa Maeul (PB)", type: "甜點", search: "파리바게뜨 동화마을", desc: "必買造型麵包。🥖", icon: "shopping-bag" },
-                    { name: "Koeop 城山酒店 Check-in", type: "住宿", search: "코업시티호텔 성산", desc: "望著日出峰。🏨", icon: "heart" }
+                    { name: "黑豬海鮮三合", type: "美食", search: "제주 흑돼지 해물삼합", desc: "海陸澎湃餐。🥘", icon: "utensils" },
+                    { name: "史努比公園", type: "打卡", search: "스누피가든", desc: "超大療癒園區。🐾", icon: "heart" },
+                    { name: "星巴克 (松堂公園店)", type: "咖啡", search: "스타벅스 더제주송당파크R점", desc: "絕美景致。☕", icon: "coffee" },
+                    { name: "Donghwa Maeul (PB)", type: "甜點", search: "파리바게뜨 동화마을", desc: "特色烘焙。🥖", icon: "shopping-bag" },
+                    { name: "Koeop 城山酒店 Check in", type: "住宿", search: "코업시티호텔 성산", desc: "面朝日出峰。🏨", icon: "heart" }
                 ]
             },
             {
-                id: 6,
-                title: "Day 5 · 水族館與日出峰",
-                date: "2026 / 01 / 15",
-                theme: "東部海角景緻",
-                bgType: "sunrise",
+                id: 6, title: "Day 5 · 城山海洋", date: "2026 / 01 / 15", theme: "水族館與日出峰", bgType: "sunrise",
                 stops: [
                     { name: "Koeop 城山酒店", type: "住宿", search: "코업시티호텔 성산", desc: "出發。🏨", icon: "heart" },
-                    { name: "Aqua Planet 水族館", type: "體驗", search: "아쿠아플라넷 제주", desc: "海底隧道美景。🐳", icon: "waves" },
-                    { name: "涉地可支", type: "自然", search: "섭지코지", desc: "浪漫海岸線散步。🌾", icon: "palmtree" },
-                    { name: "城山日出峰", type: "遺產", ticket: "5000₩", search: "성산일출봉", desc: "登頂俯瞰全景。🌋", icon: "mountain" },
-                    { name: "Oreun 咖啡廳", type: "咖啡", search: "오른", desc: "清水模靜謐海景。☕", icon: "coffee" },
-                    { name: "Chwihado 雜貨店", type: "購物", search: "취하도", desc: "精緻小店採買。🎁", icon: "shopping-bag" },
-                    { name: "Yeonmijeong (연미정)", type: "美食", search: "연미정", desc: "推薦鮑魚釜飯。🐚", icon: "utensils" },
-                    { name: "回 Koeop 城山酒店", type: "休息", search: "코업시티호텔 성산", desc: "休養體力。🌙", icon: "heart" }
+                    { name: "Aqua Planet 水族館", type: "體驗", search: "아쿠아플라넷 제주", desc: "海底隧道表演。🐳", icon: "waves" },
+                    { name: "涉地可支", type: "自然", search: "섭지코지", desc: "韓劇熱拍海岸。🌾", icon: "palmtree" },
+                    { name: "城山日出峰", type: "遺產", ticket: "5000₩", search: "성산일출봉", desc: "登頂俯瞰。🌋", icon: "mountain" },
+                    { name: "Oreun 咖啡廳", type: "咖啡", search: "오른", desc: "清水模美學。☕", icon: "coffee" },
+                    { name: "Chwihado 雜貨店", type: "購物", search: "취하도", desc: "精緻小店。🎁", icon: "shopping-bag" },
+                    { name: "Yeonmijeong (鮑魚飯)", type: "美食", search: "연미정", desc: "在地必吃。🐚", icon: "utensils" },
+                    { name: "回 Koeop 城山酒店", type: "休息", search: "코업시티호텔 성산", desc: "寧靜夜晚。🌙", icon: "heart" }
                 ]
             },
             {
-                id: 7,
-                title: "Day 6 · 牛島與甜點巡禮",
-                date: "2026 / 01 / 16",
-                theme: "離島風光與名店貝果",
-                bgType: "udo",
+                id: 7, title: "Day 6 · 牛島與貝果", date: "2026 / 01 / 16", theme: "離島慢活與必吃甜點", bgType: "udo",
                 stops: [
-                    { name: "Koeop 城山酒店 Check-out", type: "住宿", search: "코업시티호텔 성산", desc: "前往牛島。🏨", icon: "heart" },
-                    { name: "牛島漫遊", type: "離島", search: "우도도항선선착장", desc: "環島吹海風。🚢", icon: "ship" },
-                    { name: "Abebe Bakery", type: "甜點", search: "아베베 베이커리 비킬라", desc: "名店奶油麵包。🥐", icon: "shopping-bag" },
-                    { name: "London Bagel Museum", type: "名店", search: "런던베י글뮤지엄 제주", desc: "全濟州最難買貝果。🥯", icon: "shopping-bag" },
-                    { name: "Odeurang Bakery", type: "甜點", search: "오드랑베이커리 함덕점", desc: "招牌蒜味包。🥖", icon: "shopping-bag" },
-                    { name: "橘子屋咖啡廳", type: "咖啡", search: "카페 더 콘테나 제주", desc: "特殊裝飾外型。🍊", icon: "coffee" },
-                    { name: "橘子冰淇淋 (休潔利)", type: "甜點", search: "휴즐리 제주본점", desc: "絕美造型冰品。🍦", icon: "utensils" },
-                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "海邊巨龍岩石。🐲", icon: "mountain" },
-                    { name: "樂天城市酒店 Check-in", type: "住宿", search: "롯데시티호텔 제주", desc: "方便市區血拚。🏨", icon: "heart" }
+                    { name: "Koeop 城山酒店 Check out", type: "住宿", search: "코업시티호텔 성산", desc: "回濟州市。🏨", icon: "heart" },
+                    { name: "牛島漫遊", type: "離島", search: "우도도항선선착장", desc: "環島浪漫時光。🚢", icon: "ship" },
+                    { name: "Abebe Bakery", type: "甜點", search: "아베베 베이커리 비킬라", desc: "必買奶油包。🥐", icon: "shopping-bag" },
+                    { name: "London Bagel Museum", type: "名店", search: "런던베이글뮤지엄 제주", desc: "排隊首選。🥯", icon: "shopping-bag" },
+                    { name: "Odeurang Bakery", type: "甜點", search: "오드랑베이커리 함덕점", desc: "蒜味包。🥖", icon: "shopping-bag" },
+                    { name: "橘子屋咖啡廳", type: "咖啡", search: "카페 더 콘테나 제주", desc: "造型超萌。🍊", icon: "coffee" },
+                    { name: "橘子冰淇淋 (休潔利)", type: "甜點", search: "휴즐리 제주본점", desc: "絕美造型。🍦", icon: "utensils" },
+                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "龍形奇石。🐲", icon: "mountain" },
+                    { name: "樂天城市酒店 Check in", type: "住宿", search: "롯데시티호텔 제주", desc: "市中心便利。🏨", icon: "heart" }
                 ]
             },
             {
-                id: 8,
-                title: "Day 7 · Shopping Day",
-                date: "2026 / 01 / 17",
-                theme: "免稅採買與最終美食",
-                bgType: "city",
+                id: 8, title: "Day 7 · Shopping", date: "2026 / 01 / 17", theme: "免稅採買與最終美食", bgType: "city",
                 stops: [
-                    { name: "樂天城市酒店", type: "住宿", search: "롯데시티호텔 제주", desc: "出發。🏨", icon: "heart" },
-                    { name: "樂天免稅店", type: "購物", search: "롯데면세점 제주점", desc: "精品一次帶走。👜", icon: "shopping-bag" },
+                    { name: "樂天免稅店", type: "購物", search: "롯데면세점 제주점", desc: "精品採購。👜", icon: "shopping-bag" },
                     { name: "熟成到總店 (濟州店)", type: "美食", search: "숙성도 제주본점", desc: "最強黑豬肉。🐷", icon: "utensils" },
-                    { name: "新羅免稅店", type: "購物", search: "신라면세점 제주점", desc: "比價與採買。👜", icon: "shopping-bag" },
-                    { name: "必買甜甜圈", type: "甜點", search: "제주 노티드", desc: "幸福下午茶。🍩", icon: "shopping-bag" },
-                    { name: "Umu 東門市場店", type: "甜點", search: "우무 동문시장점", desc: "再次入手布丁。🍮", icon: "shopping-bag" },
-                    { name: "七星商店街", type: "購物", search: "칠성로쇼핑거리", desc: "休閒服飾補貨。👟", icon: "shopping-bag" },
-                    { name: "東門市場", type: "市場", search: "동문재래시장", desc: "夜市美味探索。🏮", icon: "shopping-bag" },
-                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後一晚大餐。🥩", icon: "utensils" },
-                    { name: "回樂天城市酒店", type: "休息", search: "롯데시티호텔 제주", desc: "整理戰利品。🌙", icon: "heart" }
+                    { name: "新羅免稅店", type: "購物", search: "신라면세점 제주점", desc: "精品補齊。👜", icon: "shopping-bag" },
+                    { name: "甜甜圈店 (Knotted)", type: "甜點", search: "제주 노티드", desc: "人氣甜甜圈。🍩", icon: "shopping-bag" },
+                    { name: "Umu 東門市場店", type: "甜點", search: "우무 동문시장점", desc: "再次入手。🍮", icon: "shopping-bag" },
+                    { name: "七星商店街", type: "購物", search: "칠성로쇼핑거리", desc: "潮流運動。👟", icon: "shopping-bag" },
+                    { name: "東門市場", type: "市場", search: "동문재래시장", desc: "夜市吃喝。🏮", icon: "shopping-bag" },
+                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後晚宴。🥩", icon: "utensils" },
+                    { name: "回樂天城市酒店", type: "休息", search: "롯데시티호텔 제주", desc: "整理行李。🌙", icon: "heart" }
                 ]
             },
             {
-                id: 9,
-                title: "Day 8 · 歸途",
-                date: "2026 / 01 / 18",
-                theme: "還車與回家流程",
-                bgType: "city",
+                id: 9, title: "Day 8 · 歸途", date: "2026 / 01 / 18", theme: "還車與歸家", bgType: "city",
                 stops: [
-                    { name: "樂天城市酒店 Check-out", type: "住宿", search: "롯데시티호텔 제주", desc: "準備返程。🏨", icon: "heart" },
+                    { name: "樂天城市酒店 Check out", type: "住宿", search: "롯데시티호텔 제주", desc: "出發機場。🏨", icon: "heart" },
                     { name: "樂天 Auto House 還車", type: "還車", search: "롯데렌터카 제주오토하우스", desc: "06:00 準時還車。⛽", icon: "car" },
-                    { name: "搭接駁車往機場", type: "交通", search: "제주국제공항", desc: "抵達機場報到。🚌", icon: "ship" },
-                    { name: "機場免稅店 (JDC)", type: "購物", search: "제주국제공항", desc: "最後一波掃貨。🎁", icon: "shopping-bag" },
-                    { name: "虎航登機", type: "歸途", search: "제주국제공항", desc: "10:50 ➔ 12:10。✈️", icon: "sun" }
+                    { name: "虎航登機", type: "歸途", search: "제주국제공항", desc: "10:50 飛向桃園。✈️", icon: "sun" }
                 ]
             }
         ];
 
         let currentDay = 0;
+        const bgIllustrations = {
+            north: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 500 Q 200 480 400 500 T 700 480" /><path d="M120 450 L 180 450" stroke-width="8" stroke-opacity="0.3" /><rect x="550" y="350" width="40" height="100" /><path d="M540 350 L 600 350 L 570 300 Z" /><circle cx="570" cy="280" r="10" /></svg>`,
+            mountain: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 550 L 300 200 L 500 450 L 650 300 L 800 550" /></svg>`,
+            tangerine: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="200" cy="200" r="30" /><circle cx="250" cy="280" r="25" /></svg>`,
+            ocean: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 400 Q 200 350 400 400 T 800 350" /></svg>`,
+            sunrise: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M50 500 L 200 450 L 400 150 L 600 450 L 750 500 Z" /></svg>`,
+            city: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="100" y="300" width="80" height="250" /></svg>`,
+            udo: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M300 400 L 500 400 L 550 350 L 250 350 Z" /></svg>`
+        };
 
         function renderDaySelector() {
             const selector = document.getElementById('day-selector');
@@ -366,13 +282,6 @@
             }).join('');
         }
 
-        function changeDay(id) { currentDay = id; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        
-        window.toggleCheck = function(el, itemId) {
-            const isChecked = el.classList.toggle('checked');
-            if (window.saveCheckState) window.saveCheckState(itemId, isChecked);
-        };
-
         window.refreshCheckboxes = function() {
             document.querySelectorAll('.check-box').forEach(box => {
                 const itemId = box.getAttribute('data-item-id');
@@ -381,10 +290,14 @@
             });
         };
 
+        function changeDay(id) { currentDay = id; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
         function updateUI() {
             const data = itineraryData.find(d => d.id === currentDay);
             renderDaySelector();
-            
+            const bgContainer = document.getElementById('bg-illustration-container');
+            bgContainer.innerHTML = bgIllustrations[data.bgType] || '';
+
             document.getElementById('day-header').innerHTML = `
                 <h2 class="text-3xl font-serif font-light italic mb-2 text-[#5D5751]">${data.title}</h2>
                 <div class="flex flex-col items-center gap-1 mb-4"><span class="text-[#C89F9C] font-serif italic text-lg tracking-widest">${data.date}</span></div>
@@ -392,54 +305,33 @@
 
             const container = document.getElementById('itinerary-grid');
             if (data.isChecklist || data.isRentalPage) {
-                let extraHTML = data.isRentalPage ? `
-                    <div class="mt-8 group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm border border-[#E9E6E2] flex flex-col md:flex-row fade-in">
-                        <div class="md:w-1/2 aspect-video bg-[#F1F1F1]/50 relative p-6 flex flex-col items-center justify-center text-center">
-                            <i data-lucide="map-pin" class="w-10 h-10 text-[#A6A890]" style="stroke-width: 1.2"></i>
-                            <p class="font-serif italic text-[#C89F9C] text-md mt-2">"${data.location.name}"</p>
-                            <div class="masking-tape absolute top-2 right-4"></div>
-                        </div>
-                        <div class="md:w-1/2 p-6 flex flex-col justify-center">
-                            <p class="text-[#8E8781] text-xs leading-relaxed mb-4 italic">「 ${data.location.desc} 」</p>
-                            <div class="flex flex-col gap-2">
-                                <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(data.location.search)}', '_blank')" class="w-full py-3 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-xs font-bold hover:bg-[#A6A890] transition-all">開啟 Naver Map</button>
-                                <button onclick="window.open('${data.websiteUrl}', '_blank')" class="w-full py-3 rounded-full bg-[#A6A890]/10 text-[#4A443F] text-xs font-bold hover:bg-[#C89F9C] transition-all">預約官網</button>
-                            </div>
-                        </div>
-                    </div>` : "";
+                let extraHTML = data.isRentalPage ? `<div class="mt-8 p-6 bg-white/90 rounded-[32px] border border-[#E9E6E2] w-full max-w-xl text-center"><h3 class="text-md font-bold mb-4">地點與網站</h3><div class="flex flex-col gap-2"><button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(data.location.search)}', '_blank')" class="w-full py-3 rounded-full bg-[#E9E6E2]/80 font-bold text-xs">開啟 Naver Map</button><button onclick="window.open('${data.websiteUrl}', '_blank')" class="w-full py-3 rounded-full bg-[#A6A890]/10 font-bold text-xs">預約官網</button></div></div>` : "";
                 container.innerHTML = `<div class="w-full max-w-xl bg-white/90 backdrop-blur-sm rounded-[40px] p-8 shadow-sm border border-[#E9E6E2] fade-in"><div class="flex flex-col gap-8">
                     ${data.sections.map(section => `<div><div class="flex items-center gap-3 mb-4"><div class="h-[2px] w-6 bg-[#C89F9C]"></div><h3 class="text-md font-bold text-[#5D5751]">${section.name}</h3></div><div class="flex flex-col gap-1">
                     ${section.items.map((item, idx) => {
                         const itemId = `${data.id}-${section.name}-${idx}`;
-                        return `<div class="check-item group" onclick="toggleCheck(this.querySelector('.check-box'), '${itemId}')">
+                        return `<div class="check-item group" onclick="if(window.saveCheckState){ window.saveCheckState('${itemId}', this.querySelector('.check-box').classList.toggle('checked')); }">
                             <div class="check-box ${window.getCheckState(itemId) ? 'checked' : ''}" data-item-id="${itemId}"></div>
                             <span class="text-sm text-[#8E8781] font-light">${item}</span>
                         </div>`;
                     }).join('')}</div></div>`).join('')}</div></div>${extraHTML}`;
             } else {
-                container.innerHTML = data.stops.map((stop, index) => `<div class="w-full max-w-2xl flex flex-col items-center gap-8"><div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm border border-[#E9E6E2] flex flex-col md:flex-row fade-in" style="animation-delay: ${index * 0.05}s">
-                    <div class="md:w-2/5 aspect-square md:aspect-video bg-[#F1F1F1]/50 relative p-4 flex items-center justify-center">
-                        <i data-lucide="${stop.icon}" class="w-10 h-10 text-[#A6A890]" style="stroke-width: 1.2"></i>
-                        <div class="absolute top-4 left-4 z-20 flex flex-col items-center"><span class="text-[8px] text-[#A6A890] font-bold uppercase">Step</span><span class="text-xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div>
+                container.innerHTML = data.stops.map((stop, index) => `<div class="w-full max-w-2xl flex flex-col items-center gap-8"><div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm border border-[#E9E6E2] flex flex-col md:flex-row fade-in">
+                    <div class="md:w-2/5 aspect-video bg-[#F1F1F1]/50 relative p-4 flex items-center justify-center">
+                        <i data-lucide="${stop.icon || 'map-pin'}" class="w-10 h-10 text-[#A6A890]"></i>
+                        <div class="absolute top-4 left-4 z-20 flex flex-col items-center"><span class="text-[8px] font-bold uppercase">Step</span><span class="text-xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div>
                     </div>
                     <div class="md:w-3/5 p-6 flex flex-col justify-center text-center md:text-left">
                         <div class="flex items-center justify-center md:justify-between mb-2"><span class="text-[10px] font-bold text-[#A6A890] uppercase tracking-widest">${stop.type}</span>${stop.ticket ? `<span class="text-[8px] font-bold text-[#C89F9C] border px-2 py-0.5 rounded-full">${stop.ticket}</span>` : ''}</div>
                         <h3 class="text-xl font-light mb-2 text-[#5D5751]">${stop.name}</h3><p class="text-[#8E8781] text-xs leading-relaxed mb-4 italic">「 ${stop.desc} 」</p>
-                        <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(stop.search)}', '_blank')" class="w-full py-3 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-xs font-bold hover:bg-[#A6A890] hover:text-white transition-all">導覽路線</button>
+                        <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(stop.search)}', '_blank')" class="w-full py-2.5 rounded-full bg-[#E9E6E2]/80 text-xs font-bold">導覽</button>
                     </div></div>
-                    ${index < data.stops.length - 1 ? `<div class="flow-arrow flex flex-col items-center gap-1"><span class="text-[8px] font-bold uppercase opacity-60 text-[#A6A890]">Next</span><i data-lucide="chevrons-down" class="w-4 h-4 text-[#A6A890]"></i></div>` : `<div class="flex flex-col items-center gap-2 opacity-30 mt-4"><div class="h-1 w-8 bg-[#A6A890] rounded-full"></div><span class="text-[8px] font-bold uppercase">End</span></div>`}</div>`).join('');
+                    ${index < data.stops.length - 1 ? `<div class="flow-arrow"><i data-lucide="chevrons-down" class="w-5 h-5"></i></div>` : `<div class="flex flex-col items-center gap-2 opacity-30 mt-4"><div class="h-1 w-8 bg-[#A6A890] rounded-full"></div><span class="text-[8px] font-bold uppercase">End Day</span></div>`}</div>`).join('');
             }
-
-            const noteEl = document.getElementById('note-section');
-            if (currentDay >= 2) {
-                noteEl.innerHTML = `<div class="flex flex-col items-center gap-4"><div class="flex items-center gap-3"><i data-lucide="pen-tool" class="text-[#A6A890] w-3 h-3"></i><span class="text-[8px] tracking-[0.5em] font-black uppercase text-[#A6A890]">Honeymoon Notes</span></div><textarea class="handwritten-note" placeholder="在這裡寫下本日最甜蜜的時刻..."></textarea></div>`;
-            } else noteEl.innerHTML = "";
-
-            let pageLabelStr = currentDay === 0 ? 'PAGE.PREP' : (currentDay === 1 ? 'PAGE.RENT' : `PAGE.0${currentDay-1}`);
-            document.getElementById('page-label').innerText = pageLabelStr;
+            lucide.createIcons();
+            document.getElementById('page-label').innerText = data.id === 0 ? 'PAGE.PREP' : (data.id === 1 ? 'PAGE.RENT' : `PAGE.0${data.id-1}`);
             document.getElementById('prev-btn').disabled = currentDay === 0;
             document.getElementById('next-btn').disabled = currentDay === itineraryData.length - 1;
-            lucide.createIcons();
         }
 
         window.onload = () => { updateUI(); };
