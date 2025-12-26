@@ -17,6 +17,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Firebase 配置
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -26,6 +27,7 @@
         let user = null;
         let checklistStates = {};
 
+        // 初始化認證 (RULE 3)
         const initAuth = async () => {
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
@@ -34,6 +36,7 @@
             }
         };
 
+        // 監聽使用者狀態與資料同步 (RULE 1 & 2)
         onAuthStateChanged(auth, (currentUser) => {
             user = currentUser;
             if (user) {
@@ -43,10 +46,13 @@
                         checklistStates = snapshot.data();
                         window.refreshCheckboxes();
                     }
-                }, (error) => {});
+                }, (error) => {
+                    console.error("Firestore Error:", error);
+                });
             }
         });
 
+        // 儲存狀態到雲端
         window.saveCheckState = async (itemId, isChecked) => {
             if (!user) return;
             checklistStates[itemId] = isChecked;
@@ -147,15 +153,15 @@
     <div class="paper-texture"></div>
     <div id="bg-illustration-container"></div>
 
-    <header class="max-w-6xl mx-auto pt-16 px-6 flex flex-col items-center relative z-10">
+    <header class="max-w-6xl mx-auto pt-16 px-6 flex flex-col items-center relative z-10 text-center">
         <div class="flex items-center gap-4 mb-4">
             <div class="h-[1px] w-12 bg-black/10"></div>
             <i data-lucide="heart" class="text-[#C89F9C] fill-current w-6 h-6"></i>
             <div class="h-[1px] w-12 bg-black/10"></div>
         </div>
-        <h1 class="text-3xl font-light tracking-[0.2em] text-center mb-10 text-[#5D5751] font-serif-tc">Jeju Honeymoon Diary</h1>
+        <h1 class="text-3xl font-light tracking-[0.2em] mb-10 text-[#5D5751] font-serif-tc">Jeju Honeymoon Diary</h1>
         <div id="day-selector" class="flex flex-wrap justify-center gap-3 mb-10 px-4 no-print"></div>
-        <button onclick="window.print()" class="no-print mb-10 flex items-center gap-2 text-xs font-medium text-[#A6A890] hover:text-[#C89F9C] transition-colors border-b border-dashed border-[#A6A890]/40 pb-1 text-center">
+        <button onclick="window.print()" class="no-print mb-10 flex items-center gap-2 text-xs font-medium text-[#A6A890] hover:text-[#C89F9C] transition-colors border-b border-dashed border-[#A6A890]/40 pb-1">
             <i data-lucide="printer" class="w-3 h-3"></i> 列印手札備份
         </button>
     </header>
@@ -211,9 +217,9 @@
                 websiteUrl: "https://www.lotterentacar.net/hp/chn/carLife/jejuAuto.do",
                 sections: [
                     { name: "接駁車資訊", items: ["營運: 06:00-23:00", "頻率: 8~15 分鐘", "月台: 機場 1-1", "車程: 15 分鐘"] },
-                    { name: "取車核對", items: ["檢查車身外觀並錄影", "確認油箱已滿", "檢查備胎工具", "核對保險合約"] }
+                    { name: "取車檢查清單", items: ["錄影記錄車身外觀", "確認油箱已滿", "檢查備胎與工具", "核對保險合約內容"] }
                 ],
-                location: { name: "Jeju Auto House", search: "롯데렌터카 제주오토하우스", desc: "取車前請務必錄影檢查外觀，滿油還車。" }
+                location: { name: "Jeju Auto House", search: "롯데렌터카 제주오토하우스", desc: "取車前請務必核對文件並錄影檢查。" }
             },
             {
                 id: 2,
@@ -222,14 +228,14 @@
                 theme: "海岸線美食與住宿",
                 bgType: "north",
                 stops: [
-                    { name: "機場去樂天租車", type: "交通", ticket: "免費接駁", search: "제주공항 롯데렌터카 셔틀", desc: "落地後首要任務，搭接駁車取車。🚌", icon: "car" },
+                    { name: "機場去樂天租車", type: "交通", ticket: "取車流程", search: "제주공항 롯데렌터카 셔틀", desc: "落地後取車開啟旅程。🚌", icon: "car" },
                     { name: "道頭洞彩虹海岸道路", type: "景點", ticket: "免費參觀", search: "도두동 무지개 해안도로", desc: "彩色石塊拍照點。🌈", icon: "waves" },
-                    { name: "梨湖小馬燈塔", type: "打卡", ticket: "免費參觀", search: "이호테우 말등대", desc: "紅白對望小馬燈塔。🐎", icon: "camera" },
+                    { name: "梨湖小馬燈塔", type: "打卡", ticket: "免費參觀", search: "이호테우 말등대", desc: "經典紅白小馬燈塔。🐎", icon: "camera" },
                     { name: "姊妹麵條", type: "美食", ticket: "約 1萬₩", search: "자매국수", desc: "必嚐黑豬肉湯麵。🍜", icon: "utensils" },
                     { name: "Egyul 橘子蛋塔", type: "點心", ticket: "約 3500₩", search: "에규울 이호테우해변점", desc: "梨湖店特色蛋塔。🍮", icon: "shopping-bag" },
-                    { name: "斯坦福酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "스탠포드호텔앤리조트 제주", desc: "店名：스탠포드호텔앤리조트 제주。🏨", icon: "heart" },
+                    { name: "斯坦福酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "스탠포드호텔앤리조트 제주", desc: "先放行李稍作休息。🏨", icon: "heart" },
                     { name: "Noraba 海鮮拉麵", type: "美食", ticket: "約 1.5萬₩", search: "노라바", desc: "涯月海鮮麵名店。🦀", icon: "utensils" },
-                    { name: "涯月白帶魚專賣店", type: "餐廳", ticket: "約 5萬₩/人", search: "애월갈치암행어사", desc: "店名：애월갈치암행어사。🐟", icon: "utensils" },
+                    { name: "涯月白帶魚專賣店", type: "餐廳", ticket: "約 5萬₩/人", search: "애월갈치암행어사", desc: "品嚐特色長魚。🐟", icon: "utensils" },
                     { name: "漢潭散步路", type: "自然", ticket: "免費參觀", search: "한담해변", desc: "海邊絕美步道。🌾", icon: "palmtree" },
                     { name: "春天咖啡廳 BOMNAL", type: "咖啡", ticket: "低消一飲品", search: "봄날카페", desc: "老字號繽紛美景。☕", icon: "coffee" },
                     { name: "Mumu 濟州選物店", type: "購物", ticket: "雜貨小舖", search: "무무제주", desc: "原創可愛小物。🎁", icon: "shopping-bag" },
@@ -239,103 +245,103 @@
             },
             {
                 id: 3,
-                title: "Day 2 · 漢拿山與速度冒險",
+                title: "Day 2 · 漢拿山與 98.1",
                 date: "2026 / 01 / 12",
-                theme: "自然高地與賽車體驗",
+                theme: "高地景色與極速體驗",
                 bgType: "mountain",
                 stops: [
                     { name: "斯坦福酒店 Check-out", type: "住宿", ticket: "退房辦理", search: "스탠포드호텔앤리조트 제주", desc: "啟程前往中部。🏨", icon: "heart" },
-                    { name: "Eorimork 停車場拍照", type: "景點", ticket: "免費參觀", search: "어리목주차장", desc: "漢拿山登山口的美景。❄️", icon: "camera" },
-                    { name: "漢拿山 1100 高地", type: "自然", ticket: "免費參觀", search: "1100고지", desc: "1月有機率看到夢幻雪景。🏔️", icon: "mountain" },
-                    { name: "濟州樂天酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "롯데호텔 제주", desc: "入住中文區奢華酒店。🏨", icon: "heart" },
-                    { name: "Hello Kitty 主題館", type: "主題", ticket: "成人 1.5萬₩", search: "헬로키티아일랜드", desc: "粉紅主題少女心。🎀", icon: "heart" },
-                    { name: "981 Park 賽車", type: "體驗", ticket: "單次 1.8萬₩", search: "981파크", desc: "重力賽車競速。🏎️", icon: "car" },
-                    { name: "豚魚吉燒肉", type: "美食", ticket: "約 4萬₩", search: "돈어길 제주신화월드본점", desc: "新華世界店，精緻黑豬肉。🥩", icon: "utensils" },
-                    { name: "回濟州樂天酒店", type: "休息", ticket: "享受設施", search: "롯데호텔 제주", desc: "夜間噴泉表演。✨", icon: "heart" }
+                    { name: "Eorimork 停車場入口拍照", type: "景點", ticket: "免費參觀", search: "어리목주차장", desc: "漢拿山入山口美景。❄️", icon: "camera" },
+                    { name: "漢拿山 1100 高地", type: "自然", ticket: "免費參觀", search: "1100고지", desc: "看霧淞與雪景。🏔️", icon: "mountain" },
+                    { name: "濟州樂天酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "롯데호텔 제주", desc: "豪華酒店體驗。🏨", icon: "heart" },
+                    { name: "Hello Kitty 主題館", type: "主題", ticket: "1.5萬₩", search: "헬로키티아일랜드", desc: "少女心爆棚。🎀", icon: "heart" },
+                    { name: "981 Park 賽車", type: "體驗", ticket: "約 1.8萬₩", search: "981파크", desc: "重力賽車競速。🏎️", icon: "car" },
+                    { name: "豚魚吉燒肉 (新華店)", type: "美食", ticket: "約 4萬₩", search: "돈어길 제주신화월드본점", desc: "精緻黑豬肉。🥩", icon: "utensils" },
+                    { name: "回濟州樂天酒店", type: "休息", search: "롯데호텔 제주", desc: "享受飯店氛圍。🌙", icon: "heart" }
                 ]
             },
             {
                 id: 4,
                 title: "Day 3 · 西歸浦與水上世界",
                 date: "2026 / 01 / 13",
-                theme: "壯麗幾何與汗蒸幕",
+                theme: "地質奇觀與汗蒸幕",
                 bgType: "tangerine",
                 stops: [
-                    { name: "濟州樂天酒店 Check-out", type: "住宿", ticket: "退房手續", search: "롯데호텔 제주", desc: "前往西歸浦。🏨", icon: "heart" },
-                    { name: "大浦柱狀節理帶", type: "自然", ticket: "成人 2000₩", search: "대포주상절리대", desc: "火山岩六角石柱。🗿", icon: "mountain" },
-                    { name: "橘子咖啡廳 Gamtta nam", type: "咖啡", ticket: "低消一飲品", search: "감따남", desc: "橘子園野餐拍照。🍊", icon: "coffee" },
-                    { name: "濟州水上世界", type: "放鬆", ticket: "約 2.5萬₩", search: "제주워터월드", desc: "韓式汗蒸幕體驗。🏊", icon: "waves" },
-                    { name: "三姓穴海鮮湯", type: "美食", ticket: "約 3.5萬₩", search: "삼성혈해물탕", desc: "澎湃活海鮮火鍋。🐙", icon: "utensils" },
-                    { name: "西歸浦欣欣酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "신신호텔 서귀포", desc: "位置便利。🏨", icon: "heart" },
-                    { name: "西歸浦偶來市場", type: "市場", ticket: "免費參觀", search: "서귀포매일올레시장", desc: "買特色伴手禮。🏮", icon: "shopping-bag" }
+                    { name: "濟州樂天酒店 Check-out", type: "住宿", search: "롯데호텔 제주", desc: "往南移動。🏨", icon: "heart" },
+                    { name: "大浦柱狀節理帶", type: "自然", ticket: "2000₩", search: "대포주상절리대", desc: "壯麗火山岩。🗿", icon: "mountain" },
+                    { name: "橘子咖啡廳 Gamtta nam", type: "咖啡", ticket: "低消一飲品", search: "감따남", desc: "橘子園拍照。🍊", icon: "coffee" },
+                    { name: "濟州水上世界", type: "體驗", ticket: "約 2.5萬₩", search: "제주워터월드", desc: "韓式汗蒸幕。🏊", icon: "waves" },
+                    { name: "三姓穴海鮮湯", type: "美食", ticket: "約 3.5萬₩", search: "삼성혈해물탕", desc: "活生生澎湃鍋。🐙", icon: "utensils" },
+                    { name: "西歸浦欣欣酒店 Check-in", type: "住宿", search: "신신호텔 서귀포", desc: "入住西歸浦市區。🏨", icon: "heart" },
+                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "買特色伴手禮。🏮", icon: "shopping-bag" }
                 ]
             },
             {
                 id: 5,
                 title: "Day 4 · 潛水艇與史努比",
                 date: "2026 / 01 / 14",
-                theme: "深海奇觀與森林園區",
+                theme: "深海探險與療癒園區",
                 bgType: "ocean",
                 stops: [
-                    { name: "西歸浦欣欣酒店 Check-out", type: "住宿", ticket: "退房手續", search: "신신호텔 서귀포", desc: "往東部移動。🏨", icon: "heart" },
-                    { name: "西歸浦潛水艇", type: "體驗", ticket: "成人 5.5萬₩", search: "서귀포잠수함", desc: "海底 40 公尺美景。⚓", icon: "waves" },
-                    { name: "正房瀑布", type: "景點", ticket: "成人 2000₩", search: "정방폭포", desc: "直接入海的瀑布。🌊", icon: "waves" },
-                    { name: "黑豬海鮮三合", type: "美食", ticket: "約 3萬₩", search: "제주 흑돼지 해물삼합", desc: "山海美味一次滿足。🥘", icon: "utensils" },
-                    { name: "史努比公園", type: "打卡", ticket: "成人 1.8萬₩", search: "스누피가든", desc: "療癒系超大園區。🐾", icon: "heart" },
-                    { name: "星巴克 (松堂公園店)", type: "咖啡", ticket: "飲品約 7000₩", search: "스타벅스 더제주송당파크R점", desc: "超大景觀門市。☕", icon: "coffee" },
-                    { name: "Donghwa Maeul (PB)", type: "甜點", ticket: "麵包點心", search: "파리바게뜨 동화마을", desc: "特色分店。🥖", icon: "shopping-bag" },
-                    { name: "Koeop 城山酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "코업시티호텔 성산", desc: "面朝城山日出峰。🏨", icon: "heart" }
+                    { name: "西歸浦欣欣酒店 Check-out", type: "住宿", search: "신신호텔 서귀포", desc: "往東移動。🏨", icon: "heart" },
+                    { name: "西歸浦潛水艇", type: "體驗", ticket: "5.5萬₩", search: "서귀포잠수함", desc: "海底 40 米景觀。⚓", icon: "waves" },
+                    { name: "正房瀑布", type: "景點", ticket: "2000₩", search: "정방폭포", desc: "直接入海的瀑布。🌊", icon: "waves" },
+                    { name: "黑豬海鮮三合", type: "美食", ticket: "約 3萬₩", search: "제주 흑돼지 해물삼합", desc: "一次滿足。🥘", icon: "utensils" },
+                    { name: "史努比公園", type: "打卡", ticket: "1.8萬₩", search: "스누皮가든", desc: "療癒系大園區。🐾", icon: "heart" },
+                    { name: "星巴克 (松堂公園店)", type: "咖啡", search: "스타벅스 더제주송당파크R점", desc: "絕美窗景。☕", icon: "coffee" },
+                    { name: "Donghwa Maeul (PB)", type: "甜點", search: "파리바게뜨 동화마을", desc: "特色烘焙店。🥖", icon: "shopping-bag" },
+                    { name: "Koeop 城山酒店 Check-in", type: "住宿", search: "코업시티호텔 성산", desc: "望向日出峰。🏨", icon: "heart" }
                 ]
             },
             {
                 id: 6,
                 title: "Day 5 · 水族館與日出峰",
                 date: "2026 / 01 / 15",
-                theme: "東部海角壯麗自然",
+                theme: "東部海岸自然之旅",
                 bgType: "sunrise",
                 stops: [
-                    { name: "Aqua Planet 水族館", type: "體驗", ticket: "成人 4萬₩", search: "아쿠아플라넷 제주", desc: "海底隧道景觀。🐳", icon: "waves" },
-                    { name: "涉地可支", type: "自然", ticket: "免費參觀", search: "섭지코지", desc: "海岸步道，韓劇熱點。🌾", icon: "palmtree" },
-                    { name: "城山日出峰", type: "遺產", ticket: "成人 5000₩", search: "성산일출봉", desc: "登頂俯瞰。🌋", icon: "mountain" },
-                    { name: "Oreun 咖啡廳", type: "咖啡", ticket: "低消一飲品", search: "오른", desc: "清水模靜謐美學。☕", icon: "coffee" },
-                    { name: "Chwihado 雜貨店", type: "購物", ticket: "選物店", search: "취하도", desc: "下道里可愛選物。🎁", icon: "shopping-bag" },
-                    { name: "Yeonmijeong (연미정)", type: "美食", ticket: "約 2萬₩", search: "연미정", desc: "鮑魚釜飯專賣。🐚", icon: "utensils" },
-                    { name: "回 Koeop 城山酒店", type: "休息", ticket: "放鬆", search: "코업시티호텔 성산", desc: "享受寧靜夜晚。🌙", icon: "heart" }
+                    { name: "Aqua Planet 水族館", type: "體驗", ticket: "4萬₩", search: "아쿠아플라넷 제주", desc: "海底隧道表演。🐳", icon: "waves" },
+                    { name: "涉地可支", type: "自然", search: "섭지코지", desc: "絕美海岸線。🌾", icon: "palmtree" },
+                    { name: "城山日出峰", type: "遺產", ticket: "5000₩", search: "성산일출봉", desc: "火山口美景。🌋", icon: "mountain" },
+                    { name: "Oreun 咖啡廳", type: "咖啡", search: "오른", desc: "清水模美學。☕", icon: "coffee" },
+                    { name: "Chwihado 雜貨店", type: "購物", search: "취하도", desc: "質感小店。🎁", icon: "shopping-bag" },
+                    { name: "Yeonmijeong (鮑魚飯)", type: "美食", search: "연미정", desc: "在地必吃。🐚", icon: "utensils" },
+                    { name: "回 Koeop 城山酒店", type: "休息", search: "코업시티호텔 성산", desc: "享受東部寧靜。🌙", icon: "heart" }
                 ]
             },
             {
                 id: 7,
                 title: "Day 6 · 牛島與貝果巡禮",
                 date: "2026 / 01 / 16",
-                theme: "離島慢活與必吃甜點",
+                theme: "離島風光與人氣麵包",
                 bgType: "udo",
                 stops: [
-                    { name: "Koeop 城山酒店 Check-out", type: "住宿", ticket: "退房手續", search: "코업시티호텔 성산", desc: "往濟州市移動。🏨", icon: "heart" },
-                    { name: "牛島漫遊", type: "離島", ticket: "來回 1萬₩", search: "우도도항선선착장", desc: "環島吹海風。🚢", icon: "ship" },
-                    { name: "Abebe Bakery", type: "甜點", ticket: "排隊美食", search: "아베베 베이커리 비킬라", desc: "必買奶油麵包。🥐", icon: "shopping-bag" },
-                    { name: "London Bagel Museum", type: "名店", ticket: "人均 2萬₩", search: "런던베이글뮤지엄 제주", desc: "超人氣排隊貝果。🥯", icon: "shopping-bag" },
-                    { name: "Odeurang Bakery", type: "甜點", ticket: "蒜味麵包", search: "오드랑베이커리 함덕점", desc: "咸德店。🥖", icon: "shopping-bag" },
-                    { name: "橘子屋咖啡廳", type: "咖啡", ticket: "低消一飲品", search: "카페 더 콘테나 제주", desc: "籃子造型特色店。🍊", icon: "coffee" },
-                    { name: "橘子冰淇淋 (Huzlee)", type: "甜點", ticket: "冰淇淋", search: "휴즐리 제주본점", desc: "特色橘子造型。🍦", icon: "utensils" },
-                    { name: "龍頭岩", type: "景點", ticket: "免費參觀", search: "용두암", desc: "海岸龍形奇石。🐲", icon: "mountain" },
-                    { name: "樂天城市酒店 Check-in", type: "住宿", ticket: "辦理入住", search: "롯데시티호텔 제주", desc: "近市區購物方便。🏨", icon: "heart" }
+                    { name: "Koeop 城山酒店 Check-out", type: "住宿", search: "코업시티호텔 성산", desc: "往市區回。🏨", icon: "heart" },
+                    { name: "牛島漫遊", type: "離島", ticket: "來回 1萬₩", search: "우도도항선선착장", desc: "環島浪漫時光。🚢", icon: "ship" },
+                    { name: "Abebe Bakery", type: "甜點", search: "아베베 베이커리 비킬라", desc: "必買奶油包。🥐", icon: "shopping-bag" },
+                    { name: "London Bagel Museum", type: "名店", search: "런던베이글뮤지엄 제주", desc: "排隊也要吃。🥯", icon: "shopping-bag" },
+                    { name: "Odeurang Bakery (咸德)", type: "甜點", search: "오드랑베이커리 함덕점", desc: "經典蒜味包。🥖", icon: "shopping-bag" },
+                    { name: "橘子屋咖啡廳", type: "咖啡", search: "카페 더 콘테나 제주", desc: "獨特造型。🍊", icon: "coffee" },
+                    { name: "橘子冰淇淋 (休潔利)", type: "甜點", search: "휴즐리 제주본점", desc: "海邊吃冰。🍦", icon: "utensils" },
+                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "龍形奇石。🐲", icon: "mountain" },
+                    { name: "樂天城市酒店 Check-in", type: "住宿", search: "롯데시티호텔 제주", desc: "便利血拚地。🏨", icon: "heart" }
                 ]
             },
             {
                 id: 8,
-                title: "Day 7 · 購物與最終美食",
+                title: "Day 7 · Shopping Final",
                 date: "2026 / 01 / 17",
-                theme: "免稅採買與黑豬肉饗宴",
+                theme: "免稅採買與黑豬肉晚餐",
                 bgType: "city",
                 stops: [
-                    { name: "樂天免稅店", type: "購物", ticket: "精品採購", search: "롯데면세점 제주점", desc: "最終掃貨。👜", icon: "shopping-bag" },
-                    { name: "熟成到總店 (濟州本店)", type: "美食", ticket: "人均 4萬₩", search: "숙성도 제주본점", desc: "最強黑豬肉。🐷", icon: "utensils" },
-                    { name: "新羅免稅店", type: "購物", search: "신라면세점 제주점", desc: "比價與補貨。👜", icon: "shopping-bag" },
-                    { name: "必吃甜甜圈", type: "甜點", search: "제주 도너츠 맛집", desc: "下午茶時光。🍩", icon: "shopping-bag" },
-                    { name: "Umu 東門市場店", type: "甜點", search: "우무 동문시장점", desc: "再次補貨布丁。🍮", icon: "shopping-bag" },
-                    { name: "七星商店街", type: "購物", search: "칠성로쇼핑거리", desc: "運動休閒品牌。👟", icon: "shopping-bag" },
-                    { name: "東門市場", type: "市場", search: "동문재래시장", desc: "夜市吃喝買伴手。🏮", icon: "shopping-bag" },
-                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後一晚慶祝。🥩", icon: "utensils" },
+                    { name: "樂天免稅店", type: "購物", search: "롯데면세점 제주점", desc: "最後掃貨。👜", icon: "shopping-bag" },
+                    { name: "熟成到燒肉 (濟州本店)", type: "美食", search: "숙성도 제주본점", desc: "黑豬肉首選。🐷", icon: "utensils" },
+                    { name: "新羅免稅店", type: "購物", search: "신라면세점 제주점", desc: "精品補齊。👜", icon: "shopping-bag" },
+                    { name: "甜甜圈店", type: "甜點", search: "제주 노티드", desc: "下午茶時光。🍩", icon: "shopping-bag" },
+                    { name: "Umu 東門市場店", type: "甜點", search: "우무 동문시장점", desc: "再次購入。🍮", icon: "shopping-bag" },
+                    { name: "七星商店街", type: "購物", search: "칠성로쇼핑거리", desc: "潮流街道。👟", icon: "shopping-bag" },
+                    { name: "東門市場", type: "市場", search: "동문재래시장", desc: "夜市熱鬧。🏮", icon: "shopping-bag" },
+                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後晚宴。🥩", icon: "utensils" },
                     { name: "回樂天城市酒店", type: "休息", search: "롯데시티호텔 제주", desc: "整理行李。🌙", icon: "heart" }
                 ]
             },
@@ -343,12 +349,12 @@
                 id: 9,
                 title: "Day 8 · 歸家與祝福",
                 date: "2026 / 01 / 18",
-                theme: "還車與歸途流程",
+                theme: "歸途流程",
                 bgType: "city",
                 stops: [
-                    { name: "樂天城市酒店 Check-out", type: "住宿", search: "롯데시티호텔 제주", desc: "準備返程。🏨", icon: "heart" },
-                    { name: "樂天 Auto House 還車", type: "還車", ticket: "滿油還車", search: "롯데렌터카 제주오토하우스", desc: "06:00 準時還車。⛽", icon: "car" },
-                    { name: "抵達機場 (虎航)", type: "歸途", ticket: "登機手續", search: "제주국제공항", desc: "航班：10:50 起飛。祝幸福滿載！✈️", icon: "sun" }
+                    { name: "樂天城市酒店 Check-out", type: "住宿", search: "롯데시티호텔 제주", desc: "準備回家。🏨", icon: "heart" },
+                    { name: "樂天 Auto House 還車", type: "還車", search: "롯데렌터카 제주오토하우스", desc: "06:00 還車。⛽", icon: "car" },
+                    { name: "機場 (虎航)", type: "歸途", search: "제주국제공항", desc: "航班：10:50。蜜月圓滿！✈️", icon: "sun" }
                 ]
             }
         ];
@@ -394,10 +400,9 @@
             bgContainer.style.opacity = '0';
             setTimeout(() => { bgContainer.innerHTML = bgIllustrations[data.bgType] || ''; bgContainer.style.opacity = '0.08'; }, 300);
 
-            const header = document.getElementById('day-header');
-            header.innerHTML = `
+            document.getElementById('day-header').innerHTML = `
                 <h2 class="text-4xl font-serif font-light italic mb-2 text-[#5D5751]">${data.title}</h2>
-                <div class="flex flex-col items-center gap-2 mb-4"><span class="text-[#C89F9C] font-serif italic text-xl tracking-widest">${data.date}</span><div class="h-[1px] w-24 bg-[#A6A890]/30"></div></div>
+                <div class="flex flex-col items-center gap-2 mb-4"><span class="text-[#C89F9C] font-serif italic text-xl tracking-widest">${data.date}</span></div>
                 <p class="text-[#A6A890] text-sm tracking-[0.3em] uppercase font-medium">— ${data.theme} —</p>`;
 
             const container = document.getElementById('itinerary-grid');
