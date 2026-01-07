@@ -6,12 +6,12 @@
     <title>濟州島蜜月手寫手札</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com/"></script>
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Noto Serif TC -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;900&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- 全域函數與狀態定義 (放在 Module 之前，防止 TypeError) -->
+    <!-- 全域狀態與防錯定義 -->
     <script>
         window.checklistStates = {};
         window.getCheckState = (itemId) => window.checklistStates[itemId] || false;
@@ -32,7 +32,7 @@
         };
     </script>
 
-    <!-- Firebase 模組 -->
+    <!-- Firebase 整合模組 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -43,13 +43,13 @@
             if (typeof __firebase_config !== 'undefined') {
                 firebaseConfig = JSON.parse(__firebase_config);
             }
-        } catch (e) { console.warn("Firebase config not defined"); }
+        } catch (e) { console.warn("Firebase config not available."); }
 
         if (firebaseConfig && firebaseConfig.apiKey) {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'jeju-honeymoon-v3';
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'jeju-honeymoon-2026';
 
             const initAuth = async () => {
                 try {
@@ -58,7 +58,7 @@
                     } else {
                         await signInAnonymously(auth);
                     }
-                } catch (err) { console.error("Auth init error", err); }
+                } catch (err) { console.error("Auth failed"); }
             };
 
             onAuthStateChanged(auth, (user) => {
@@ -69,7 +69,7 @@
                             window.checklistStates = snapshot.data();
                             window.refreshCheckboxes();
                         }
-                    }, (err) => console.error("Snapshot error", err));
+                    }, (err) => {});
                 }
             });
 
@@ -141,7 +141,7 @@
         <h1 class="text-3xl font-light tracking-[0.2em] mb-8 text-[#5D5751] font-serif-tc">Jeju Honeymoon Diary</h1>
         <div id="day-selector" class="flex flex-wrap justify-center gap-2 mb-8 px-4 no-print"></div>
         <button onclick="window.print()" class="no-print mb-8 flex items-center gap-2 text-xs font-medium text-[#A6A890] hover:text-[#C89F9C] transition-colors border-b border-dashed border-[#A6A890]/40 pb-1">
-            <i data-lucide="printer" class="w-3 h-3"></i> 列印我的手札
+            <i data-lucide="printer" class="w-3 h-3"></i> 列印備份
         </button>
     </header>
 
@@ -165,127 +165,129 @@
     <script>
         const itineraryData = [
             {
-                id: 0, title: "Preparation · 準備清單", date: "Before Departure", theme: "核心證件、換錢與航班資訊", bgType: "city", isChecklist: true,
+                id: 0, title: "Preparation · 準備清單", date: "Before Departure", theme: "核心證件與數位準備", bgType: "city", isChecklist: true,
                 sections: [
-                    { name: "✈️ 航班資訊 (虎航)", items: ["去程 1/11：06:40 ➔ 09:50", "回程 1/18：10:50 ➔ 12:10"] },
-                    { name: "📑 核心證件", items: ["護照", "國際駕照 (IDP)", "台灣駕照 (取車核對)", "韓元現金", "國外回饋信用卡"] },
-                    { name: "📱 數位與網路", items: ["韓國上網卡 / WiFi機", "WOWPASS (Dream Tower 對面辦理)", "Naver Map / Catch Table APP", "轉接頭 (Type C/F)"] }
+                    { name: "✈️ 航班資訊 (虎航)", items: ["去程 1/11：06:40 桃園 ➔ 09:50 濟州", "回程 1/18：10:50 濟州 ➔ 12:10 桃園"] },
+                    { name: "📑 核心證件", items: ["護照 (有效期內)", "國際駕照 (IDP)", "台灣駕照 (取車核對)", "韓元現金", "國外回饋信用卡"] },
+                    { name: "📱 數位工具", items: ["韓國上網 SIM 卡 / WiFi 機", "WOWPASS (濟州君悅辦理)", "Naver Map APP", "Catch Table (餐廳預約)", "Papago 翻譯"] }
                 ]
             },
             {
-                id: 1, title: "Rental · 樂天租車指南", date: "2026 / 01 / 11", theme: "取車流程與官網預約", bgType: "city", isRentalPage: true,
+                id: 1, title: "Rental · 樂天租車指南", date: "2026 / 01 / 11", theme: "取車流程與官網連結", bgType: "city", isRentalPage: true,
                 websiteUrl: "https://www.lotterentacar.net/hp/chn/carLife/jejuAuto.do",
                 sections: [
-                    { name: "接駁車資訊", items: ["營運時間: 06:00-23:00", "班次: 每 8~15 分鐘一班", "地點: 濟州機場 1 號月台 1-1", "車程: 約 15 分鐘"] },
-                    { name: "取車檢查清單", items: ["錄影記錄車身外觀", "確認油箱已滿", "檢查內裝與備胎", "核對保險內容"] }
+                    { name: "🚌 接駁車資訊", items: ["營運時間: 06:00 - 23:00", "班次頻率: 每 8~15 分鐘一班", "搭乘位置: 機場 5 號出口月台 1-1", "車程時間: 約 15 分鐘"] },
+                    { name: "📸 取車檢查清單", items: ["錄影記錄車身外觀", "確認油箱已加滿", "檢查內裝與備胎", "核對保險合約條款"] }
                 ],
-                location: { name: "Lotte Jeju Auto House", search: "롯데렌터카 제주오토하우스", desc: "落地後搭乘接駁車前往取車點。" }
+                location: { name: "Lotte Rent-a-Car Auto House", search: "롯데렌터카 제주오토하우스", desc: "落地後搭乘 1-1 月台接駁車前往取車。" }
             },
             {
-                id: 2, title: "Day 1 · 1/11 抵達與西部行程", date: "2026 / 01 / 11", theme: "換錢、免稅店與海岸美食", bgType: "north",
+                id: 2, title: "Day 1 · 1/11 北部抵達", date: "2026 / 01 / 11", theme: "換錢、免稅店與海岸美食", bgType: "north",
                 stops: [
-                    { name: "Moneybox 濟州分店", type: "換錢", search: "머니박스 제주지점", desc: "先換好足夠的韓元現金。💰" },
-                    { name: "濟州君悅 (WOWPASS)", type: "數位", search: "제주 드림타워", desc: "對面辦理 WOWPASS 卡以便購物。💳" },
-                    { name: "新羅免稅店 濟州店", type: "購物", search: "신라면세점 제주점", desc: "開買啦！精品採購第一站。👜" },
-                    { name: "道頭洞彩虹海岸道路", type: "景點", search: "도두동무지개해안도로", desc: "彩色石塊絕美拍照點。🌈" },
-                    { name: "小馬燈塔 (梨湖)", type: "打卡", search: "제주이호랜드", desc: "經典紅白對望的小馬燈塔。🐎" },
-                    { name: "姊妹麵條", type: "美食", search: "자매국수", desc: "14:30-16:10 為休息時間，記得避開。🍜" },
-                    { name: "Egyul 橘子蛋塔", type: "點心", search: "에귤타르트 이호테우해변점", desc: "梨湖店，營業到 19:30。🍮" },
-                    { name: "斯坦福度假酒店 (Daein)", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "辦理入住並放行李。🏨" },
-                    { name: "春天咖啡廳 / Beril", type: "咖啡", search: "봄날카페", desc: "二選一去處。春天 9:00-21:00。☕" },
-                    { name: "Mumu 濟州選物店", type: "購物", search: "무무제주", desc: "可愛插畫雜貨，11:00-18:00。🎁" },
-                    { name: "買 UMU 布丁", type: "甜點", search: "우무", desc: "營業到 20:00，文青必吃布丁。🍮" },
-                    { name: "Noraba 海鮮拉麵", type: "美食", search: "노라바", desc: "15:00-16:00 休息。海鮮料爆多。🦀" },
-                    { name: "Aewol Galchi (白帶魚)", type: "晚餐", search: "애월갈치암행어사", desc: "豐盛白帶魚晚餐。🐟" }
+                    { name: "Moneybox 換錢", type: "換錢", search: "머니박스 제주지점", desc: "머니박스 제주지점。💰", icon: "banknote" },
+                    { name: "濟州君悅 (WOWPASS)", type: "數位", search: "제주 드림타워", desc: "酒店內辦理 WOWPASS。💳", icon: "credit-card" },
+                    { name: "新羅免稅店 濟州店", type: "購物", search: "신라면세점 제주점", desc: "精品採購第一站。👜", icon: "shopping-bag" },
+                    { name: "彩虹海岸道路", type: "景點", search: "도두동무지개해안도로", desc: "道頭洞彩色石塊拍照。🌈", icon: "camera" },
+                    { name: "小馬燈塔", type: "打卡", search: "제주이호랜드", desc: "紅白對望小馬燈塔。🐎", icon: "camera" },
+                    { name: "姊妹麵條", type: "美食", search: "자매국수", desc: "休息時間 14:30-16:10。🍜", icon: "utensils" },
+                    { name: "Egyul 橘子蛋塔", type: "點心", search: "에귤타르트 이호테우해변점", desc: "營業 8:00-19:30。🍮", icon: "shopping-bag" },
+                    { name: "斯坦福度假酒店", type: "住宿", search: "스탠포드호텔앤리조트 제주", desc: "辦理入住放行李。🏨", icon: "heart" },
+                    { name: "春天咖啡廳 / Beril", type: "咖啡", search: "봄날카페", desc: "二選一去處。春天 9:00-21:00。☕", icon: "coffee" },
+                    { name: "Mumu 濟州選物店", type: "購物", search: "무무제주", desc: "可愛插畫雜貨，營業到 18:00。🎁", icon: "shopping-bag" },
+                    { name: "買 UMU 布丁", type: "甜點", search: "우무", desc: "文青必買布丁，營業到 20:00。🍮", icon: "shopping-bag" },
+                    { name: "Noraba 海鮮拉麵", type: "美食", search: "노라바", desc: "休 15:00-16:00。澎湃海鮮。🦀", icon: "utensils" },
+                    { name: "Aewol Galchi (白帶魚)", type: "晚餐", search: "애월갈치암행어사", desc: "豪華白帶魚晚餐 (2選1)。🐟", icon: "utensils" }
                 ]
             },
             {
-                id: 3, title: "Day 2 · 1/12 漢拿山與藝術", date: "2026 / 01 / 12", theme: "高地美景、博物館與神話酒店", bgType: "mountain",
+                id: 3, title: "Day 2 · 1/12 中部探險", date: "2026 / 01 / 12", theme: "漢拿山、博物館與奢華樂天", bgType: "mountain",
                 stops: [
-                    { name: "1100 高地濕地", type: "自然", search: "1100고지습지", desc: "8點出門看雪。❄️" },
-                    { name: "Eorimork 漢拿山石碑", type: "景點", search: "어리목주차장입구", desc: "石碑前打卡拍照。🏔️" },
-                    { name: "Arte Museum 濟州", type: "體驗", ticket: "₩18,000", search: "아르떼뮤지엄 제주", desc: "沉浸式光影展。🎨" },
-                    { name: "濟州堂 (Jejudang)", type: "中餐", search: "제주당", desc: "享用在地風味午餐。🍱" },
-                    { name: "Hello Kitty 主題館", type: "主題", ticket: "₩16,000", search: "헬로키티아일랜드", desc: "重拾少女心。🎀" },
-                    { name: "山茶花之丘 (Camellia Hill)", type: "打卡", search: "카멜리아힐", desc: "冬日山茶花美景。🌸" },
-                    { name: "名號馬農牛排 (中文店)", type: "美食", search: "명호마농갈비 중문점", desc: "需現場排隊的美味韓牛。🥩" },
-                    { name: "濟州樂天酒店 Check in", type: "住宿", search: "롯데호텔 제주", desc: "樂天神話住宿體驗。🏨" }
+                    { name: "漢拿山石碑 (Eorimork)", type: "景點", search: "어리목주차장입구", desc: "與經典石碑合影。🏔️", icon: "camera" },
+                    { name: "1100 高地濕地", type: "自然", search: "1100고지습지", desc: "觀賞冬日霧淞美景。❄️", icon: "mountain" },
+                    { name: "濟州堂 (Jejudang)", type: "中餐", search: "제주당", desc: "享用在地風味午餐。🍱", icon: "utensils" },
+                    { name: "Arte Museum 濟州", type: "體驗", ticket: "₩18,000", search: "아르떼뮤지엄 제주", desc: "沉浸式光影藝術。🎨", icon: "sparkles" },
+                    { name: "Hello Kitty 主題館", type: "主題", ticket: "₩16,000", search: "헬로키티아일랜드", desc: "粉紅主題少女心。🎀", icon: "heart" },
+                    { name: "新世界 Simon Outlet", type: "購物", search: "신세계사이먼 제주", desc: "精品名牌折扣。👟", icon: "shopping-bag" },
+                    { name: "名號馬農牛排", type: "美食", search: "명호마농갈비 중문점", desc: "頂級韓牛饗宴。🥩", icon: "utensils" },
+                    { name: "Luna Fall", type: "夜景", search: "루나폴", desc: "夢幻燈光秀，營業至午夜。✨", icon: "sparkles" },
+                    { name: "濟州樂天酒店", type: "住宿", search: "롯데호텔 제주", desc: "入住樂天神話酒店。🏨", icon: "heart" }
                 ]
             },
             {
-                id: 4, title: "Day 3 · 1/13 西歸浦自然日", date: "2026 / 01 / 13", theme: "節理帶、水上世界與偶來市場", bgType: "tangerine",
+                id: 4, title: "Day 3 · 1/13 南部放鬆", date: "2026 / 01 / 13", theme: "地質奇觀、水上世界與市場", bgType: "tangerine",
                 stops: [
-                    { name: "大浦柱狀節理帶", type: "自然", ticket: "₩2,000", search: "대포주상절리", desc: "停車費 ₩1000-3000。🗿" },
-                    { name: "咖啡廳 Gamtta nam", type: "咖啡", search: "감따남", desc: "橘子園野餐風格。🍊" },
-                    { name: "濟州水上世界", type: "放鬆", search: "워터월드 제주", desc: "桑拿與汗蒸幕舒壓。🏊" },
-                    { name: "三姓穴海鮮湯 (西歸浦店)", type: "美食", search: "삼성혈해물탕 서귀포점", desc: "爆量活海鮮。🐙" },
-                    { name: "西歸浦欣欣酒店 Check in", type: "住宿", search: "신신호텔 서귀포", desc: "市中心便利酒店。🏨" },
-                    { name: "又來停飯捲 (Onunjeong)", type: "美食", search: "오는정김밥", desc: "超難訂的傳奇飯捲。🍙" },
-                    { name: "巴黎貝甜 (PB)", type: "點心", search: "파리바게뜨 서귀포", desc: "買特色麵包。🥖" },
-                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "營業到 20:00。🏮" }
+                    { name: "大浦柱狀節理帶", type: "自然", ticket: "₩2,000", search: "대포주상절리", desc: "停車費 ₩1-3k。地質奇觀。🗿", icon: "mountain" },
+                    { name: "咖啡廳 Gamtta nam", type: "咖啡", search: "감따남", desc: "橘子園野餐氛圍。🍊", icon: "coffee" },
+                    { name: "濟州水上世界", type: "放鬆", search: "워터월드 제주", desc: "韓式汗蒸幕與桑拿。🏊", icon: "waves" },
+                    { name: "三姓穴海鮮湯 (西歸浦)", type: "美食", search: "삼성혈해물탕 서귀포점", desc: "活生生澎湃海鮮。🐙", icon: "utensils" },
+                    { name: "西歸浦欣欣酒店", type: "住宿", search: "신신호텔 서귀포", desc: "辦理入住放行李。🏨", icon: "heart" },
+                    { name: "又來停飯捲 (Onunjeong)", type: "美食", search: "오는정김밥", desc: "傳奇級難訂飯捲。🍙", icon: "utensils" },
+                    { name: "巴黎貝甜 (PB)", type: "點心", search: "파리바게뜨 서귀포", desc: "買些特色點心。🥖", icon: "shopping-bag" },
+                    { name: "西歸浦偶來市場", type: "市場", search: "서귀포매일올레시장", desc: "在地美味大集合。🏮", icon: "shopping-bag" }
                 ]
             },
             {
-                id: 5, title: "Day 4 · 1/14 海底與森林", date: "2026 / 01 / 14", theme: "潛水艇、正房瀑布與史努比", bgType: "ocean",
+                id: 5, title: "Day 4 · 1/14 海底與史努比", date: "2026 / 01 / 14", theme: "潛水艇、入海瀑布與森林咖啡", bgType: "ocean",
                 stops: [
-                    { name: "正房瀑布", type: "景點", ticket: "₩2,000", search: "정방폭포", desc: "亞洲唯一入海瀑布。🌊" },
-                    { name: "西歸浦潛水艇", type: "體驗", search: "서귀포잠수함", desc: "10:00 預約場次。⚓" },
-                    { name: "黑豬海鮮三合", type: "美食", search: "흑돼지해물삼합", desc: "海陸滋味一次滿足。🥘" },
-                    { name: "史努比公園 (Snoopy Garden)", type: "主題", ticket: "₩19,000", search: "스누피가든", desc: "超大療癒園區。🐾" },
-                    { name: "星巴克 (松堂公園店)", type: "咖啡", search: "스타벅스 더제주송당파크", desc: "特色窗景必訪。☕" },
-                    { name: "巴黎貝甜 (松堂店)", type: "點心", search: "파리바게뜨 동화마을", desc: "星巴克旁。🥖" },
-                    { name: "藍瓶咖啡 (Blue Bottle)", type: "咖啡", search: "블루보틀 제주 카페", desc: "濟州藍瓶體驗。☕" },
-                    { name: "Koeop 城山酒店 Check in", type: "住宿", search: "코업시티호텔 성산", desc: "城山地區休息。🏨" }
+                    { name: "正房瀑布", type: "景點", ticket: "₩2,000", search: "정방폭포", desc: "直接入海瀑布。免費停車。🌊", icon: "waves" },
+                    { name: "西歸浦潛水艇", type: "體驗", search: "서귀포잠수함", desc: "10:00 預約海底世界。⚓", icon: "waves" },
+                    { name: "黑豬海鮮三合", type: "美食", search: "흑돼지해물삼합", desc: "海陸滋味一次滿足。🥘", icon: "utensils" },
+                    { name: "史努比公園", type: "打卡", ticket: "₩19,000", search: "스누피가든", desc: "療癒系大型園區。🐾", icon: "heart" },
+                    { name: "星巴克 (松堂公園店)", type: "咖啡", search: "스타벅스 더제주송당파크", desc: "超美景觀特色門市。☕", icon: "coffee" },
+                    { name: "巴黎貝甜 (松堂店)", type: "點心", search: "파리바게뜨 동화마을", desc: "星巴克旁邊。🥖", icon: "shopping-bag" },
+                    { name: "藍瓶咖啡 (Blue Bottle)", type: "咖啡", search: "블루보틀 제주 카페", desc: "極簡質感咖啡。☕", icon: "coffee" },
+                    { name: "Koeop 城山酒店", type: "住宿", search: "코업시티호텔 성산", desc: "入住城山休息。🏨", icon: "heart" }
                 ]
             },
             {
-                id: 6, title: "Day 5 · 1/15 城山日出海洋", date: "2026 / 01 / 15", theme: "日出峰、水族館與倫敦貝果", bgType: "sunrise",
+                id: 6, title: "Day 5 · 1/15 城山東部", date: "2026 / 01 / 15", theme: "世界遺產、水族館與貝果", bgType: "sunrise",
                 stops: [
-                    { name: "城山日出峰", type: "景點", ticket: "約 $112", search: "성산일출봉", desc: "7:30出門。2點有海女表演。🌋" },
-                    { name: "Aqua Planet 水族館", type: "體驗", ticket: "₩44,600", search: "아쿠아플라넷 제주", desc: "9:30 營業。🐳" },
-                    { name: "Chwihado 雜貨店", type: "購物", search: "취하도", desc: "下道選物小店。🎁" },
-                    { name: "明珍鮑魚 (Myeongjin)", type: "美食", search: "명진전복", desc: "必吃鮑魚釜飯。🐚" },
-                    { name: "Abebe Bakery", type: "甜點", search: "아베베", desc: "奶油包排隊名店。🥐" },
-                    { name: "夢格雷 (Mongle) 月汀里", type: "選物", search: "몽그레 월정리점", desc: "雲朵夾心餅乾。☁️" },
-                    { name: "倫敦貝果 (London Bagel)", type: "名店", search: "런던베이글뮤지엄 제주", desc: "Catch Table 抽號。🥯" }
+                    { name: "城山日出峰", type: "景點", ticket: "約 $112", search: "성산일출봉", desc: "7:30出門。2點海女表演。🌋", icon: "mountain" },
+                    { name: "Aqua Planet 水族館", type: "體驗", ticket: "₩44,600", search: "아쿠아플라넷 제주", desc: "9:30 營業。kkday 購票。🐳", icon: "waves" },
+                    { name: "Chwihado 雜貨店", type: "購物", search: "취하도", desc: "質感選物小店。🎁", icon: "shopping-bag" },
+                    { name: "明珍鮑魚", type: "美食", search: "명진전복", desc: "招牌鮑魚釜飯。🐚", icon: "utensils" },
+                    { name: "Abebe Bakery", type: "甜點", search: "아베베", desc: "奶油包必排隊。🥐", icon: "shopping-bag" },
+                    { name: "夢格雷 (Mongle) 月汀里", type: "選物", search: "몽그레 월정리점", desc: "可愛雲朵造型夾心。☁️", icon: "shopping-bag" },
+                    { name: "倫敦貝果 (London Bagel)", type: "名店", search: "런던베이글뮤지엄 제주", desc: "Catch Table 抽號。🥯", icon: "shopping-bag" }
                 ]
             },
             {
-                id: 7, title: "Day 6 · 1/16 牛島慢時光", date: "2026 / 01 / 16", theme: "渡輪環島、大蒜麵包與免稅店", bgType: "udo",
+                id: 7, title: "Day 6 · 1/16 牛島慢活", date: "2026 / 01 / 16", theme: "離島風光、甜點與超市採購", bgType: "udo",
                 stops: [
-                    { name: "牛島漫遊", type: "離島", ticket: "₩10,000", search: "우도도항선선착장", desc: "8點發船。攜帶護照。🚢" },
-                    { name: "牛島王子的故事", type: "甜點", search: "우도왕자이야기", desc: "必吃花生冰淇淋。🍦" },
-                    { name: "Odeurang Bakery (咸德)", type: "點心", search: "오드랑베이커리 함덕점", desc: "大蒜奶油包是招牌。🥖" },
-                    { name: "海女飯捲", type: "美食", search: "해녀김밥", desc: "海岸輕食。🍙" },
-                    { name: "橘子屋咖啡廳", type: "打卡", search: "카페 더 콘테나", desc: "巨大橘子籃外型。🍊" },
-                    { name: "樂天城市酒店 Check in", type: "住宿", search: "롯데시티호텔 제주", desc: "市區購物核心。🏨" },
-                    { name: "樂天免稅店", type: "購物", search: "롯데면세점", desc: "最後購物衝刺。👜" },
-                    { name: "Mak-soe (烤腸)", type: "美食", search: "막쇠", desc: "韓式烤腸配燒酒。🍻" },
-                    { name: "Emart / 樂天超市", type: "購物", search: "이마트 제주점", desc: "採購土產與泡麵。🛒" },
-                    { name: "Chita 炸雞", type: "宵夜", search: "치타치킨", desc: "回酒店享用宵夜。🍗" }
+                    { name: "牛島漫遊", type: "離島", ticket: "₩10,000", search: "우도도항선선착장", desc: "買來回票。含牛島王子的故事。🚢", icon: "ship" },
+                    { name: "Odeurang Bakery (咸德)", type: "甜點", search: "오드랑베이커리 함덕점", desc: "大蒜麵包必買。🥖", icon: "shopping-bag" },
+                    { name: "海女飯捲", type: "美食", search: "해녀김밥", desc: "輕食海岸美味。🍙", icon: "utensils" },
+                    { name: "橘子屋咖啡廳", type: "打卡", search: "카페 더 콘테나", desc: "巨大橘子籃造型。🍊", icon: "coffee" },
+                    { name: "樂天城市酒店", type: "住宿", search: "롯데시티호텔 제주", desc: "回市區便利購物。🏨", icon: "heart" },
+                    { name: "樂天 / 新羅免稅店", type: "購物", search: "롯데면세점 제주", desc: "精品最後補齊。👜", icon: "shopping-bag" },
+                    { name: "Mak-soe (烤腸)", type: "晚餐", search: "막쇠", desc: "韓式烤腸配啤酒。🍻", icon: "utensils" },
+                    { name: "Emart / 樂天超市", type: "採購", search: "이마트 제주점", desc: "買泡麵零食土產。🛒", icon: "shopping-bag" },
+                    { name: "Chita 炸雞", type: "宵夜", search: "치타치킨", desc: "回飯店享用宵夜。🍗", icon: "utensils" }
                 ]
             },
             {
-                id: 8, title: "Day 7 · 1/17 市區全日購物", date: "2026 / 01 / 17", theme: "甜甜圈、櫻花大道與東門市場", bgType: "city",
+                id: 8, title: "Day 7 · 1/17 最終血拚", date: "2026 / 01 / 17", theme: "甜甜圈、櫻花大道與東門市場", bgType: "city",
                 stops: [
-                    { name: "Knotted 甜甜圈", type: "名店", search: "제주 노티드", desc: "9點開門，幸福感甜點。🍩" },
-                    { name: "熟成到 (Sukseongdo)", type: "美食", search: "숙성도", desc: "訂 11:00 享用最強黑豬肉。🐷" },
-                    { name: "典農路櫻花大道", type: "散步", search: "제주 전농로 벚꽃거리", desc: "悠閒散策。🌸" },
-                    { name: "橘子徽章 (Gyulmedal)", type: "選物", search: "귤메달 하우스", desc: "設計小物店。🏅" },
-                    { name: "Huzlee 橘子冰 (休潔利)", type: "甜點", ticket: "₩12,000", search: "휴즐리 제주본점", desc: "造型超萌橘子冰。🍦" },
-                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "巨龍奇石景觀。🐲" },
-                    { name: "七星街 / 地下街", type: "購物", search: "제주칠성로상점가", desc: "運動品牌與韓流服飾。👟" },
-                    { name: "東門市場 (含夜市)", type: "市場", search: "동문재래시장", desc: "8出口夜市，吃個過癮。🏮" },
-                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後一晚大餐。🥩" },
-                    { name: "Salt Bread 鹽可頌霜淇淋", type: "甜點", search: "솔브레", desc: "完美結尾。🍦" }
+                    { name: "Knotted 甜甜圈", type: "名店", search: "제주 노티드", desc: "9點開門，幸福甜點。🍩", icon: "shopping-bag" },
+                    { name: "熟成到 (Sukseongdo)", type: "美食", search: "숙성도", desc: "11:00 預約總店黑豬肉。🐷", icon: "utensils" },
+                    { name: "典農路櫻花大道", type: "散步", search: "제주 전농로 벚꽃거리", desc: "悠閒街道散步。🌸", icon: "palmtree" },
+                    { name: "Gyulmedal 橘子徽章", type: "選物", search: "귤메달 하우스", desc: "特色設計紀念品。🏅", icon: "shopping-bag" },
+                    { name: "Saeuri 飯捲 (濟州市)", type: "美食", search: "제주시새우리", desc: "精緻蝦肉飯捲。🍙", icon: "utensils" },
+                    { name: "Huzlee 橘子冰", type: "甜點", ticket: "₩12,000", search: "휴즐리 제주본점", desc: "超萌橘子冰。🍦", icon: "utensils" },
+                    { name: "龍頭岩", type: "景點", search: "용두암", desc: "海岸巨龍奇石。🐲", icon: "mountain" },
+                    { name: "七星街 / 地下街", type: "購物", search: "제주칠성로상점가", desc: "運動品牌採買。👟", icon: "shopping-bag" },
+                    { name: "東門市場 (2.3/5.6/8出口)", type: "市場", search: "동문재래시장", desc: "5.6海鮮、8出口夜市。🏮", icon: "shopping-bag" },
+                    { name: "黑豬肉一條街", type: "美食", search: "흑돼지거리", desc: "最後晚宴饗宴。🥩", icon: "utensils" },
+                    { name: "Salt Bread 鹽可頌冰", type: "甜點", search: "솔브레", desc: "完美甜點結尾。🍦", icon: "shopping-bag" }
                 ]
             },
             {
-                id: 9, title: "Day 8 · 1/18 歸途", date: "2026 / 01 / 18", theme: "還車與回家流程", bgType: "city",
+                id: 9, title: "Day 8 · 1/18 歸途", date: "2026 / 01 / 18", theme: "還車、免稅店與退稅", bgType: "city",
                 stops: [
-                    { name: "樂天 Auto House 還車", type: "手續", search: "롯데렌터카 제주오토하우스", desc: "6點前準時還車。⛽" },
-                    { name: "機場免稅店 (JDC)", type: "購物", search: "제주국제공항", desc: "最後補貨時間。🎁" },
-                    { name: "搭機返台 (虎航)", type: "歸途", search: "제주국제공항", desc: "10:50 起飛。蜜月圓滿！✈️" }
+                    { name: "樂天 Auto House 還車", type: "手續", search: "롯데렌터카 제주오토하우스", desc: "6點前準時還車。⛽", icon: "car" },
+                    { name: "機場免稅店 (JDC)", type: "購物", search: "제주국제공항", desc: "最後補貨時間。🎁", icon: "shopping-bag" },
+                    { name: "16號閘口退稅", type: "退稅", search: "제주국제공항", desc: "過海關後 16 號閘口對面。💵", icon: "credit-card" },
+                    { name: "搭機返台 (虎航)", type: "歸途", search: "제주국제공항", desc: "10:50 ➔ 12:10。蜜月圓滿！✈️", icon: "sun" }
                 ]
             }
         ];
@@ -300,35 +302,43 @@
             }).join('');
         }
 
-        function changeDay(id) {
-            currentDay = id;
-            updateUI();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
+        function changeDay(id) { currentDay = id; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
         function updateUI() {
             const data = itineraryData[currentDay];
             renderDaySelector();
-            
+            const bgContainer = document.getElementById('bg-illustration-container');
+            bgContainer.style.opacity = '0';
+            setTimeout(() => {
+                const bgs = {
+                    north: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 500 Q 200 480 400 500 T 700 480" /><path d="M120 450 L 180 450" stroke-width="8" stroke-opacity="0.3" /><rect x="550" y="350" width="40" height="100" /><path d="M540 350 L 600 350 L 570 300 Z" /><circle cx="570" cy="280" r="10" /></svg>`,
+                    mountain: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M100 550 L 300 200 L 500 450 L 650 300 L 800 550" /></svg>`,
+                    tangerine: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="200" cy="200" r="30" /><circle cx="250" cy="280" r="25" /></svg>`,
+                    ocean: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 400 Q 200 350 400 400 T 800 350" /></svg>`,
+                    sunrise: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M50 500 L 200 450 L 400 150 L 600 450 L 750 500 Z" /></svg>`,
+                    city: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="100" y="300" width="80" height="250" /></svg>`,
+                    udo: `<svg viewBox="0 0 800 600" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M300 400 L 500 400 L 550 350 L 250 350 Z" /></svg>`
+                };
+                bgContainer.innerHTML = bgs[data.bgType] || '';
+                bgContainer.style.opacity = '0.06';
+            }, 300);
+
             document.getElementById('day-header').innerHTML = `
                 <h2 class="text-3xl font-serif font-light italic mb-2 text-[#5D5751]">${data.title}</h2>
                 <div class="flex flex-col items-center gap-1 mb-4"><span class="text-[#C89F9C] font-serif italic text-lg tracking-widest">${data.date}</span></div>
                 <p class="text-[#A6A890] text-[10px] tracking-[0.3em] uppercase font-bold">— ${data.theme} —</p>`;
 
             const container = document.getElementById('itinerary-grid');
-            
             if (data.isChecklist || data.isRentalPage) {
                 let extraHTML = data.isRentalPage ? `
-                    <div class="mt-4 p-6 bg-white/90 rounded-[32px] border border-[#E9E6E2] w-full max-w-xl text-center">
+                    <div class="mt-8 p-6 bg-white/90 rounded-[32px] border border-[#E9E6E2] w-full max-w-xl text-center">
                         <p class="font-serif italic text-[#C89F9C] text-md mb-4">"${data.location.name}"</p>
                         <div class="flex flex-col gap-2">
-                            <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(data.location.search)}', '_blank')" class="w-full py-3 rounded-full bg-[#E9E6E2]/80 font-bold text-xs">開啟 Naver Map</button>
-                            <button onclick="window.open('${data.websiteUrl}', '_blank')" class="w-full py-3 rounded-full bg-[#A6A890]/10 font-bold text-xs">樂天官網</button>
+                            <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(data.location.search)}', '_blank')" class="w-full py-3 rounded-full bg-[#E9E6E2]/80 text-[#4A443F] text-xs font-bold hover:bg-[#A6A890] transition-all">開啟 Naver Map</button>
+                            <button onclick="window.open('${data.websiteUrl}', '_blank')" class="w-full py-3 rounded-full bg-[#A6A890]/10 text-[#4A443F] text-xs font-bold hover:bg-[#C89F9C] transition-all">樂天租車官網</button>
                         </div>
                     </div>` : "";
-
-                container.innerHTML = `<div class="w-full max-w-xl bg-white/90 backdrop-blur-sm rounded-[40px] p-8 shadow-sm border border-[#E9E6E2] fade-in">
-                    <div class="flex flex-col gap-8">
+                container.innerHTML = `<div class="w-full max-w-xl bg-white/90 backdrop-blur-sm rounded-[40px] p-8 shadow-sm border border-[#E9E6E2] fade-in"><div class="flex flex-col gap-8">
                     ${data.sections.map(section => `<div><div class="flex items-center gap-3 mb-4"><div class="h-[2px] w-6 bg-[#C89F9C]"></div><h3 class="text-md font-bold text-[#5D5751]">${section.name}</h3></div><div class="flex flex-col gap-1">
                     ${section.items.map((item, idx) => {
                         const itemId = `${data.id}-${section.name}-${idx}`;
@@ -341,24 +351,23 @@
                 container.innerHTML = data.stops.map((stop, index) => `
                     <div class="w-full max-w-2xl flex flex-col items-center gap-4">
                         <div class="w-full group bg-white/90 backdrop-blur-sm rounded-[32px] overflow-hidden shadow-sm border border-[#E9E6E2] flex flex-col md:flex-row fade-in">
-                            <div class="md:w-2/5 aspect-video bg-[#F1F1F1]/50 relative p-4 flex items-center justify-center">
+                            <div class="md:w-1/3 aspect-video bg-[#F1F1F1]/50 relative p-4 flex items-center justify-center">
                                 <i data-lucide="${stop.icon || 'map-pin'}" class="w-10 h-10 text-[#A6A890]" style="stroke-width: 1.2"></i>
-                                <div class="absolute top-4 left-4 z-20 flex flex-col items-center"><span class="text-[8px] font-bold uppercase">Step</span><span class="text-xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div>
+                                <div class="absolute top-4 left-4 z-20 flex flex-col items-center"><span class="text-[8px] font-bold uppercase text-[#A6A890]">Step</span><span class="text-xl font-serif italic text-[#C89F9C]">${(index + 1).toString().padStart(2, '0')}</span></div>
                             </div>
-                            <div class="md:w-3/5 p-6 flex flex-col justify-center text-center md:text-left">
+                            <div class="md:w-2/3 p-6 flex flex-col justify-center text-center md:text-left">
                                 <div class="flex items-center justify-center md:justify-between mb-2">
                                     <span class="text-[10px] font-bold text-[#A6A890] uppercase tracking-widest">${stop.type}</span>
                                     ${stop.ticket ? `<span class="text-[8px] font-bold text-[#C89F9C] border px-2 py-0.5 rounded-full">${stop.ticket}</span>` : ''}
                                 </div>
                                 <h3 class="text-xl font-light mb-2 text-[#5D5751]">${stop.name}</h3>
                                 <p class="text-[#8E8781] text-xs leading-relaxed mb-4 italic">「 ${stop.desc} 」</p>
-                                <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(stop.search || stop.name)}', '_blank')" class="w-full py-2.5 rounded-full bg-[#E9E6E2]/80 text-xs font-bold">導覽</button>
+                                <button onclick="window.open('https://map.naver.com/v5/search/${encodeURIComponent(stop.search || stop.name)}', '_blank')" class="w-full py-2.5 rounded-full bg-[#E9E6E2]/80 text-xs font-bold hover:bg-[#A6A890] hover:text-white transition-all">開啟導覽</button>
                             </div>
                         </div>
-                        ${index < data.stops.length - 1 ? `<div class="flow-arrow"><i data-lucide="chevrons-down" class="w-5 h-5"></i></div>` : `<div class="flex flex-col items-center gap-2 opacity-30 mt-4"><div class="h-1 w-8 bg-[#A6A890] rounded-full"></div><span class="text-[8px] font-bold uppercase">End Day</span></div>`}
+                        ${index < data.stops.length - 1 ? `<div class="flow-arrow"><i data-lucide="chevrons-down" class="w-5 h-5"></i></div>` : `<div class="flex flex-col items-center gap-2 opacity-30 mt-4"><div class="h-1 w-8 bg-[#A6A890] rounded-full"></div><span class="text-[8px] font-bold uppercase text-[#A6A890]">End Day</span></div>`}
                     </div>`).join('');
             }
-            
             const noteEl = document.getElementById('note-section');
             if (currentDay >= 2) {
                 noteEl.innerHTML = `<div class="flex flex-col items-center gap-4"><div class="flex items-center gap-3"><i data-lucide="pen-tool" class="text-[#A6A890] w-3 h-3"></i><span class="text-[8px] tracking-[0.5em] font-black uppercase text-[#A6A890]">Honeymoon Notes</span></div><textarea class="handwritten-note" placeholder="在這裡寫下本日最甜蜜的時刻..."></textarea></div>`;
